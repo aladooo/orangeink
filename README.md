@@ -32,7 +32,7 @@
 
 ## 🚀 Quick Start
 
-1. 下载 [`index.html`](https://aladooo.github.io/orangeink/)（或直接访问 GitHub Pages 预览）；
+1. **在线使用**：直接访问 [GitHub Pages](https://aladooo.github.io/orangeink/)；或下载 [Release 附件 `orangeink.html`](https://github.com/aladooo/orangeink/releases/latest/download/orangeink.html)（每个版本的定稿成品）；
 2. 双击打开——**零依赖、零构建、完全离线**；
 3. 粘贴 Markdown → 点「一键复制到公众号」→ 到公众号编辑器粘贴。
 
