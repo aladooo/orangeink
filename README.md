@@ -15,10 +15,8 @@
 
 它与其他 Markdown→微信工具最大的不同，是把**公众号平台的结构合规检查做成了内置自检器**——粘贴进公众号之前，「行高叠字」「font-family 违规」「对比度不足」这类会弹「结构异常」警告的问题，就已经在编辑器里被预演和拦截过了。
 
-<!-- TODO: 放置真机实拍图（公众号发布效果，3 张关键屏）
-<p align="center"><img src="example/demo-preview-1.png" width="280"><img src="example/demo-preview-2.png" width="280"><img src="example/demo-preview-3.png" width="280"></p>
-<p align="center"><sub>公众号发布后的真机实拍（非渲染截图）</sub></p>
--->
+<p align="center"><img src="example/demo-preview-1.jpg" width="260">&nbsp;<img src="example/demo-preview-2.jpg" width="260">&nbsp;<img src="example/demo-preview-3.jpg" width="260"></p>
+<p align="center"><sub>公众号发布后的真机实拍（非渲染截图）：首屏 intro 模块 / 引用块分行与加粗 / 分割线与文末参考块</sub></p>
 
 ## ✨ Features
 
