@@ -155,11 +155,11 @@ html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
 <script>
 (function(){
 "use strict";
-/* ===== 中登主题内联样式（逐元素内联，复制进公众号生效） ===== */
+/* ===== 橙墨主题内联样式（逐元素内联，复制进公众号生效） ===== */
 /* ===== 排版参数（工具栏可调） ===== */
 /* 字号阶梯基准：按 375px 手机屏实测可读，677px 安全区同比适用 */
 var BASE={p:16,h1:22,h2:19,h3:17,h4:16,quote:15,lead:17,code:13.5,cap:13,tab:14};
-var OPT={zoom:1, pad:14, dark:0, syncScroll:1, theme:'zhongdeng'};   /* 字号倍率 / 两侧安全边距px / 深色模拟 / 同步滚动 / 主题 */
+var OPT={zoom:1, pad:14, dark:0, syncScroll:1, theme:'orangeink'};   /* 字号倍率 / 两侧安全边距px / 深色模拟 / 同步滚动 / 主题 */
 
 /* 字体策略：正文**完全不输出 font-family**。
    官方 font-family 规则的白名单只有一条链：
@@ -174,17 +174,18 @@ var OPT={zoom:1, pad:14, dark:0, syncScroll:1, theme:'zhongdeng'};   /* 字号�
    ③ 一个暖色阶负责次级信息（H4/题注/落款）；④ 模块底用同色系极浅色。
    每个主题 = { name, C(色板), alerts(五色提示块 [底,左条]) }。
    色板键位说明——ORANGE:accent 条/点/分割条；DEEP:标题/表头/观点卡；EMBER:H3/行内代码/引用文字；
+   CODE:行内代码文字（可选，缺省回退 EMBER；当 EMBER 对 CODEBG 对比度不足时用更深色单独指定）；
    STRONG:加粗；CHIP:徽章/序号白字底；LINK:链接；BROWN:H4；TAN:落款；TEXT:正文；TEXT2:题注/斜体；
    TXTQ:pre/步骤说明；WARMBG/WARMBG2/CODEBG:模块底/pre底/行内code底；ZEBRA:斑马纹；LIST2:二级列表点；BORDER:表格框线。
    注册规则：所有文字色必须过 WCAG AA（正文≥4.5:1），过不了自检器的主题不允许上线。 */
 var THEMES={
-  zhongdeng:{
-    name:'中登 · 炭黑×亮橙（默认）',
+  orangeink:{
+    name:'橙墨 · 炭黑×亮橙（默认）',
     C:{
       ORANGE:'#ff5a00', DEEP:'#1c1917', EMBER:'#c94a00', STRONG:'#c93600',
       CHIP:'#d03800', LINK:'#c23a00', BROWN:'#8c5a2b', TAN:'#8a663a',
       TEXT:'#26221c', TEXT2:'#6b6154', TXTQ:'#57503f',
-      WARMBG:'#fff3e7', WARMBG2:'#faf0e2', CODEBG:'#ffe9cc',
+      WARMBG:'#fff3e7', WARMBG2:'#faf0e2', CODEBG:'#ffe9cc', CODE:'#b84300',
       ZEBRA:'#faf6ef', LIST2:'#ff8a3d', BORDER:'#e8e0d2', PTEYE:'#ff9a4d', PTNOTE:'#f3e2ca'
     },
     alerts:{ NOTE:['#fff3e7','#ff5a00'], TIP:['#f9f3ea','#8c5a2b'], IMPORTANT:['#ffeee8','#c93600'],
@@ -256,7 +257,7 @@ function buildS(){
     strong:'font-weight:700;color:'+C.STRONG,
     em:'font-style:italic;color:'+C.TEXT2,
     a:'color:'+C.LINK+';text-decoration:none;border-bottom:1px solid '+hexRgba(C.LINK,0.35),
-    code:'background:'+C.CODEBG+';color:'+C.EMBER+';padding:2px 6px;border-radius:3px;font-size:'+px(BASE.code)+';'+lh(BASE.code,1.6),
+    code:'background:'+C.CODEBG+';color:'+(C.CODE||C.EMBER)+';padding:2px 6px;border-radius:3px;font-size:'+px(BASE.code)+';'+lh(BASE.code,1.6),
     pre:'background:'+C.WARMBG2+';color:'+C.TXTQ+';padding:14px 16px;border-radius:6px;overflow:auto;font-size:'+px(BASE.code)+';'+lh(BASE.code,1.75)+'margin:0 0 22px;border-left:3px solid '+C.ORANGE+';white-space:pre',
     blockquote:'margin:0 0 22px;padding:13px 16px;background:'+C.WARMBG+';border-left:4px solid '+C.ORANGE+';color:'+C.TXTQ+';font-size:'+px(BASE.quote)+';'+lh(BASE.quote,1.85)+'border-radius:0 6px 6px 0',
     /* 列表：圆点/序号颜色继承 li 的 color（公众号无 ::marker 可用），
@@ -276,7 +277,7 @@ function buildS(){
     img:'max-width:100%;height:auto;border-radius:6px;display:block;margin:16px auto',
     alertBox:function(t){
       /* 五色提示块随主题走：[底, 左条]，徽章底另行取 LABC（白字底过 AA） */
-      var map=(THEMES[OPT.theme]&&THEMES[OPT.theme].alerts)||THEMES.zhongdeng.alerts;
+      var map=(THEMES[OPT.theme]&&THEMES[OPT.theme].alerts)||THEMES.orangeink.alerts;
       var c=map[t]||map.NOTE;
       return 'margin:0 0 22px;padding:14px 16px;background:'+c[0]+';border-left:4px solid '+c[1]+';color:'+C.TEXT+';font-size:'+px(15)+';'+lh(15,1.85)+'border-radius:0 6px 6px 0';
     },
