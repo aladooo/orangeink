@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>橙墨 · 公众号 Markdown 排版台</title>
+<style>
+/* ===== 工具自身界面样式（不进公众号） ===== */
+:root{
+  --ui-bg:#faf8f5; --ui-fg:#2b2b2b; --ui-border:#e3ddd3; --ui-panel:#fff;
+  --brand:#ff5a00; --blue:#1c1917; --brown:#c94a00; --tan:#a58650; --gray:#6C6C6C;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;font-size:14px}
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+/* 顶栏 */
+#toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;
+  border-bottom:1px solid var(--ui-border);flex:0 0 auto;flex-wrap:wrap}
+#toolbar select{cursor:pointer;border:1px solid var(--ui-border);background:#fff;color:var(--ui-fg);
+  padding:5px 8px;border-radius:4px;font-size:13px}
+#toolbar select:hover{border-color:var(--brand);color:var(--blue)}
+#toolbar .opt-label{font-size:12px;color:var(--gray);margin-left:8px}
+#toolbar .brand{font-weight:700;color:var(--blue);font-size:16px;margin-right:8px;
+  border-left:4px solid var(--brand);padding-left:8px}
+#toolbar .sp{flex:1}
+#toolbar button,#toolbar label.btn{cursor:pointer;border:1px solid var(--ui-border);
+  background:#fff;color:var(--ui-fg);padding:5px 12px;border-radius:4px;font-size:13px}
+#toolbar button:hover,#toolbar label.btn:hover{border-color:var(--brand);color:var(--blue)}
+#toolbar button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+#toolbar button.primary:hover{background:#1c3a5a}
+#toolbar .seg{display:inline-flex;border:1px solid var(--ui-border);border-radius:4px;overflow:hidden}
+#toolbar .seg button{border:none;border-radius:0;border-left:1px solid var(--ui-border)}
+#toolbar .seg button:first-child{border-left:none}
+#toolbar .seg button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+#checkBadge{display:inline-block;min-width:20px;text-align:center;background:var(--brand);
+  color:#fff;border-radius:10px;padding:1px 6px;font-size:12px;margin-left:4px}
+#checkBadge.zero{background:#bbb}
+/* 主体 */
+#main{display:flex;flex:1;min-height:0}
+#editorWrap{flex:0 0 46%;display:flex;flex-direction:column;border-right:1px solid var(--ui-border);min-width:0}
+#editor{flex:1;width:100%;border:none;outline:none;resize:none;padding:14px 16px;
+  background:#fff;color:var(--ui-fg);font-family:"JetBrains Mono","Consolas","Microsoft YaHei",monospace;
+  font-size:13.5px;line-height:1.7;tab-size:2}
+#editorBar{flex:0 0 auto;background:#fff;border-top:1px solid var(--ui-border);
+  padding:4px 12px;color:var(--gray);font-size:12px;display:flex;gap:14px}
+#previewBar{flex:0 0 auto;background:#fff;border-top:1px solid var(--ui-border);
+  padding:4px 12px;color:var(--gray);font-size:12px;display:flex;gap:14px}
+#previewWrap{flex:1;display:flex;flex-direction:column;min-width:0;background:#efeae3;overflow:hidden}
+#previewStage{flex:1;overflow:auto;padding:18px;display:flex;justify-content:center;
+  background:repeating-linear-gradient(45deg,#efeae3,#efeae3 10px,#e8e2d8 10px,#e8e2d8 20px)}
+#preview{background:#fff;width:100%;max-width:677px;padding:20px 18px;box-shadow:0 2px 12px rgba(0,0,0,.08);
+  min-height:200px;align-self:flex-start}
+#previewWrap.mobile #previewStage{padding:0;background:#2b2b2b}
+#previewWrap.mobile #preview{max-width:375px;padding:14px;margin:18px auto;border-radius:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,.3)}
+/* 深色模式模拟：invert+hue-rotate 是模拟微信「智能反色」的通用做法——
+   白底变深底、炭黑文字变浅色、橙系色相经 invert+180° 旋转后大致保持橙族。
+   只作用于预览（加在 #preview 容器上，不是元素内联样式），复制 payload 完全不受影响；
+   也不影响 getComputedStyle 读到的 color/background，自检结果与浅色一致。 */
+#previewWrap.dark #preview{background:#17191d;box-shadow:0 2px 12px rgba(0,0,0,.5)}
+#previewWrap.dark #preview .fm-article{filter:invert(1) hue-rotate(180deg)}
+#preview:empty::before{content:"左侧粘贴 Markdown 后，这里实时预览公众号手机端效果";color:#bbb;padding:40px 0;display:block;text-align:center}
+/* 自检面板 */
+#checkPanel{flex:0 0 auto;max-height:38%;overflow:auto;background:#fff;border-top:2px solid var(--tan);
+  padding:10px 14px;font-size:13px}
+#checkPanel .ok{color:#2e7d32;font-weight:600;padding:6px 0}
+#checkPanel .cnt{color:var(--blue);font-weight:700;margin-bottom:6px}
+#checkPanel .issue{padding:7px 9px;margin:5px 0;background:#faf6ef;border-left:3px solid var(--brand);
+  border-radius:0 4px 4px 0;cursor:pointer}
+#checkPanel .issue:hover{background:#fdf3df}
+#checkPanel .issue .sev-error{color:#c0392b;font-weight:700;font-size:12px}
+#checkPanel .issue .sev-warn{color:#b8860b;font-weight:700;font-size:12px}
+#checkPanel .issue small{color:var(--gray)}
+/* 收起态 = 单行摘要条：面板内边距从 10px 收到 6px，.ok/.cnt 行高锁 22px，
+   6+22+6 正好 34px——旧版只有 max-height:34px 而没收 padding，文字被拦腰切掉（2026-09-16 实测） */
+#checkPanel.collapsed{max-height:34px;overflow:hidden;padding:6px 14px}
+#checkPanel.collapsed .ok,#checkPanel.collapsed .cnt{padding:0;margin:0;line-height:22px}
+#toggleCheck{float:right;cursor:pointer;color:var(--gray);font-size:12px}
+#toggleCheck:hover{color:var(--brand)}
+/* 预览临时高亮（不进公众号，复制前移除） */
+#preview .__hl{outline:3px solid var(--brand) !important;outline-offset:2px}
+/* 浮动提示 */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(39,71,112,.95);
+  color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s;
+  pointer-events:none;z-index:99}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="toolbar">
+    <span class="brand">橙墨 <em style="font-style:normal;font-weight:400;font-size:11px;color:var(--gray);letter-spacing:.5px">orangeink · oimd</em></span>
+    <label class="btn">打开 .md<input type="file" id="fileInput" accept=".md,.markdown,.txt" style="display:none"></label>
+    <button id="btnClear">清空</button>
+    <select id="insertSel" title="在当前光标处插入排版模块">
+      <option value="">插入模块…</option>
+      <option value="intro">栏目开场 intro</option>
+      <option value="quote">金句卡 quote</option>
+      <option value="steps">步骤清单 steps</option>
+      <option value="point">观点提炼 point</option>
+    </select>
+    <span class="sp"></span>
+    <span class="opt-label">主题</span>
+    <select id="themeSel" title="切换排版主题（配色随主题整体切换，复制内容同步带出）"></select>
+    <span class="opt-label">字号</span>
+    <div class="seg" id="sizeSeg">
+      <button data-size="s">小</button>
+      <button data-size="m" class="on">标准</button>
+      <button data-size="l">大</button>
+    </div>
+    <span class="opt-label">边距</span>
+    <div class="seg" id="padSeg" title="两侧安全边距：曲面屏建议保留 14px 以上">
+      <button data-pad="0">无</button>
+      <button data-pad="14" class="on">标准</button>
+      <button data-pad="22">宽</button>
+    </div>
+    <div class="seg" id="viewSeg">
+      <button data-view="mobile" class="on">手机 375</button>
+      <button data-view="safe">安全区 677</button>
+    </div>
+    <span class="opt-label">深色</span>
+    <div class="seg" id="darkSeg" title="模拟微信深色模式的智能反色效果（只影响预览，不影响复制内容）">
+      <button data-dark="0" class="on">关</button>
+      <button data-dark="1">模拟</button>
+    </div>
+    <span class="opt-label">滚动</span>
+    <div class="seg" id="syncSeg" title="同步滚动：编辑器与预览按滚动百分比对齐（doocs 同款思路）——两边滚到同一相对位置，垂直中部内容正好对照查看">
+      <button data-sync="1" class="on">同步</button>
+      <button data-sync="0">各滚</button>
+    </div>
+    <button id="btnCheck">自检 <span id="checkBadge" class="zero">0</span></button>
+    <button id="btnCopy" class="primary">一键复制到公众号</button>
+  </div>
+  <div id="main">
+    <div id="editorWrap">
+      <textarea id="editor" placeholder="在此粘贴 Markdown…（支持拖拽 .md 文件进来）"></textarea>
+      <div id="editorBar">
+        <span id="charCount">0 字</span>
+        <span id="saveStatus"></span>
+      </div>
+    </div>
+    <div id="previewWrap" class="mobile">
+      <div id="previewStage"><div id="preview"></div></div>
+      <div id="previewBar"><span id="bodyCount" title="估算公众号编辑器的「字数」：中文字符与中文标点各计 1，英文字母/数字每个计 1，emoji 计 1，空白与英文标点不计（用 08 期真文校准，误差约 1%）。图片/视频不计字数。">正文 0 字</span></div>
+    </div>
+  </div>
+  <div id="checkPanel"><span id="toggleCheck">收起 ▾</span><div class="cnt">自检面板：粘贴内容后点「自检」</div></div>
+</div>
+<div id="toast"></div>
+
+<script>
+/*__VENDOR_MARKDOWN_IT__*/   <!-- build.py 将此注释替换为 markdown-it.min.js 全文 -->
+</script>
+<script>
+(function(){
+"use strict";
+/* ===== 中登主题内联样式（逐元素内联，复制进公众号生效） ===== */
+/* ===== 排版参数（工具栏可调） ===== */
+/* 字号阶梯基准：按 375px 手机屏实测可读，677px 安全区同比适用 */
+var BASE={p:16,h1:22,h2:19,h3:17,h4:16,quote:15,lead:17,code:13.5,cap:13,tab:14};
+var OPT={zoom:1, pad:14, dark:0, syncScroll:1, theme:'zhongdeng'};   /* 字号倍率 / 两侧安全边距px / 深色模拟 / 同步滚动 / 主题 */
+
+/* 字体策略：正文**完全不输出 font-family**。
+   官方 font-family 规则的白名单只有一条链：
+     "mp-quote", PingFang SC, system-ui, -apple-system
+   内联 font-family 只要不以这条链开头即判违规——连通用族 `serif` 也算违规。
+   所以「标题用宋体」在公众号里没有合规的实现方式（读者设备也不会因此加载宋体），
+   栏目辨识度改由字重 / 字号阶梯 / 字距 / 配色秩序承担。 */
+
+/* ===== 主题注册表（L2 公开接口，详见 docs/theming.md） =====
+   设计方法（四主题同构）：① 靠黑白反差提神，版面主体永远是深字×纸白；
+   ② 单一高饱和 accent 只做条/点/序号等装饰，永远不做正文文字色；
+   ③ 一个暖色阶负责次级信息（H4/题注/落款）；④ 模块底用同色系极浅色。
+   每个主题 = { name, C(色板), alerts(五色提示块 [底,左条]) }。
+   色板键位说明——ORANGE:accent 条/点/分割条；DEEP:标题/表头/观点卡；EMBER:H3/行内代码/引用文字；
+   STRONG:加粗；CHIP:徽章/序号白字底；LINK:链接；BROWN:H4；TAN:落款；TEXT:正文；TEXT2:题注/斜体；
+   TXTQ:pre/步骤说明；WARMBG/WARMBG2/CODEBG:模块底/pre底/行内code底；ZEBRA:斑马纹；LIST2:二级列表点；BORDER:表格框线。
+   注册规则：所有文字色必须过 WCAG AA（正文≥4.5:1），过不了自检器的主题不允许上线。 */
+var THEMES={
+  zhongdeng:{
+    name:'中登 · 炭黑×亮橙（默认）',
+    C:{
+      ORANGE:'#ff5a00', DEEP:'#1c1917', EMBER:'#c94a00', STRONG:'#c93600',
+      CHIP:'#d03800', LINK:'#c23a00', BROWN:'#8c5a2b', TAN:'#8a663a',
+      TEXT:'#26221c', TEXT2:'#6b6154', TXTQ:'#57503f',
+      WARMBG:'#fff3e7', WARMBG2:'#faf0e2', CODEBG:'#ffe9cc',
+      ZEBRA:'#faf6ef', LIST2:'#ff8a3d', BORDER:'#e8e0d2', PTEYE:'#ff9a4d', PTNOTE:'#f3e2ca'
+    },
+    alerts:{ NOTE:['#fff3e7','#ff5a00'], TIP:['#f9f3ea','#8c5a2b'], IMPORTANT:['#ffeee8','#c93600'],
+             WARNING:['#fff5e0','#e08a00'], CAUTION:['#fdeeea','#cf3b2a'] }
+  },
+  inkblue:{
+    name:'墨蓝 × 朱砂',
+    C:{
+      ORANGE:'#bf3b1e', DEEP:'#1b2430', EMBER:'#2f4d6e', STRONG:'#a83317',
+      CHIP:'#bf3b1e', LINK:'#a83317', BROWN:'#44566e', TAN:'#6e5f4b',
+      TEXT:'#262a2e', TEXT2:'#5c6670', TXTQ:'#2f4d6e',
+      WARMBG:'#f2f4f7', WARMBG2:'#eef1f5', CODEBG:'#e8ecf4',
+      ZEBRA:'#f7f9fb', LIST2:'#d96a52', BORDER:'#d9dee6', PTEYE:'#e08a6e', PTNOTE:'#c9d4e4'
+    },
+    alerts:{ NOTE:['#f7e9e5','#bf3b1e'], TIP:['#eef1f5','#44566e'], IMPORTANT:['#f4e6e1','#a83317'],
+             WARNING:['#f6f0e0','#a06300'], CAUTION:['#f6e7e4','#cf3b2a'] }
+  },
+  pine:{
+    name:'松烟 × 陶土',
+    C:{
+      ORANGE:'#2e6b46', DEEP:'#1d2b20', EMBER:'#3f5d46', STRONG:'#a84e20',
+      CHIP:'#2e6b46', LINK:'#a84e20', BROWN:'#4c6b55', TAN:'#77624a',
+      TEXT:'#262b26', TEXT2:'#5d665c', TXTQ:'#3f5d46',
+      WARMBG:'#eef2ec', WARMBG2:'#e7efe9', CODEBG:'#dfe9e1',
+      ZEBRA:'#f6f8f5', LIST2:'#5e9673', BORDER:'#d5ddd6', PTEYE:'#7fb593', PTNOTE:'#d5ddd2'
+    },
+    alerts:{ NOTE:['#e7efe9','#2e6b46'], TIP:['#eaf0ea','#4c6b55'], IMPORTANT:['#f2e9e2','#a84e20'],
+             WARNING:['#f3efe0','#a06300'], CAUTION:['#f3e8e4','#cf3b2a'] }
+  },
+  gold:{
+    name:'石墨 × 鎏金',
+    C:{
+      ORANGE:'#d9a514', DEEP:'#201d26', EMBER:'#4a3f63', STRONG:'#8a5f0e',
+      CHIP:'#8a5f0e', LINK:'#8a5f0e', BROWN:'#7a5a14', TAN:'#7a6a50',
+      TEXT:'#26242a', TEXT2:'#6d675c', TXTQ:'#4a3f63',
+      WARMBG:'#f6f2e8', WARMBG2:'#f0ead9', CODEBG:'#ede4c8',
+      ZEBRA:'#faf7ef', LIST2:'#e3bd4e', BORDER:'#e0d9c6', PTEYE:'#e9c76a', PTNOTE:'#e6ddc4'
+    },
+    alerts:{ NOTE:['#f3ecdb','#d9a514'], TIP:['#f1edda','#7a5a14'], IMPORTANT:['#f0e8d5','#8a5f0e'],
+             WARNING:['#f4efd9','#a06300'], CAUTION:['#f5e6e0','#cf3b2a'] }
+  }
+};
+/* 当前生效色板：所有渲染代码在调用时读 C.x，切主题只需重指 C 并重建 S */
+var C=THEMES[OPT.theme].C;
+/* hex → rgba：微信粘贴解析对 #RRGGBBAA 的支持不可控，透明度一律输出 rgba() */
+function hexRgba(h,a){
+  var v=/^#([0-9a-f]{6})$/i.exec(h); if(!v) return h;
+  return 'rgba('+parseInt(v[1].slice(0,2),16)+','+parseInt(v[1].slice(2,4),16)+','+parseInt(v[1].slice(4,6),16)+','+a+')';
+}
+function px(v){ return Math.round(v*OPT.zoom*10)/10+'px'; }
+
+/* 行高一律输出 px，绝不输出无单位数字。
+   原因（实测得出）：公众号线上的行高检测仍是旧口径——行数 = 元素高度 ÷ parseFloat(line-height)。
+   写无单位 `1.8` 时它被当作 1.8px 解析，算出几十行，平均行高 = 1.8 < 字号 → 误报
+   「行高小于字体大小，多行文字可能重叠」（doocs 默认样式踩的也是同一个坑）。
+   写成 px 后，新口径（0.2.16 起改用 Range 实测）与旧口径都不会误判。
+   注意：凡带 px 行高的元素，必须同时有显式 font-size，否则行高与字号会在不同端错配。 */
+function lh(fontBase, ratio){ return 'line-height:'+px(fontBase*ratio)+';'; }
+
+function buildS(){
+  return {
+    /* 正文：行高 1.8 + 字距 .3px 是中文可读性的甜点；暖褐灰替代冷灰 */
+    p:'margin:0 0 22px;font-size:'+px(BASE.p)+';'+lh(BASE.p,1.8)+'color:'+C.TEXT+';letter-spacing:.3px',
+    lead:'margin:0 0 24px;font-size:'+px(BASE.lead)+';'+lh(BASE.lead,1.85)+'color:'+C.TEXT+';letter-spacing:.3px',
+    h1:'margin:0 0 26px;font-size:'+px(BASE.h1)+';'+lh(BASE.h1,1.45)+'font-weight:700;color:'+C.DEEP+';letter-spacing:.5px;padding-bottom:12px;border-bottom:3px solid '+C.ORANGE,
+    h2:'margin:32px 0 16px;font-size:'+px(BASE.h2)+';'+lh(BASE.h2,1.5)+'font-weight:700;color:'+C.DEEP+';letter-spacing:.3px;padding-left:12px;border-left:4px solid '+C.ORANGE,
+    h3:'margin:26px 0 12px;font-size:'+px(BASE.h3)+';'+lh(BASE.h3,1.5)+'font-weight:700;color:'+C.EMBER+';letter-spacing:.3px',
+    h4:'margin:22px 0 10px;font-size:'+px(BASE.h4)+';'+lh(BASE.h4,1.5)+'font-weight:600;color:'+C.BROWN+';letter-spacing:.3px',
+    strong:'font-weight:700;color:'+C.STRONG,
+    em:'font-style:italic;color:'+C.TEXT2,
+    a:'color:'+C.LINK+';text-decoration:none;border-bottom:1px solid '+hexRgba(C.LINK,0.35),
+    code:'background:'+C.CODEBG+';color:'+C.EMBER+';padding:2px 6px;border-radius:3px;font-size:'+px(BASE.code)+';'+lh(BASE.code,1.6),
+    pre:'background:'+C.WARMBG2+';color:'+C.TXTQ+';padding:14px 16px;border-radius:6px;overflow:auto;font-size:'+px(BASE.code)+';'+lh(BASE.code,1.75)+'margin:0 0 22px;border-left:3px solid '+C.ORANGE+';white-space:pre',
+    blockquote:'margin:0 0 22px;padding:13px 16px;background:'+C.WARMBG+';border-left:4px solid '+C.ORANGE+';color:'+C.TXTQ+';font-size:'+px(BASE.quote)+';'+lh(BASE.quote,1.85)+'border-radius:0 6px 6px 0',
+    /* 列表：圆点/序号颜色继承 li 的 color（公众号无 ::marker 可用），
+       所以 li 染亮橙给圆点上色，文字由 wrapTextRuns 包 span 染回炭黑。
+       二级（嵌套）列表：方块小点 + 浅半档的橙（C.LIST2），视觉上退半步。 */
+    ul:'margin:0 0 22px;padding-left:22px;font-size:'+px(BASE.p)+';'+lh(BASE.p,1.8)+'color:'+C.ORANGE+';letter-spacing:.3px',
+    ol:'margin:0 0 22px;padding-left:22px;font-size:'+px(BASE.p)+';'+lh(BASE.p,1.8)+'color:'+C.ORANGE+';letter-spacing:.3px',
+    ul2:'margin:10px 0 0;padding-left:20px;font-size:'+px(15)+';'+lh(15,1.8)+'color:'+C.LIST2+';list-style-type:square;letter-spacing:.3px',
+    ol2:'margin:10px 0 0;padding-left:20px;font-size:'+px(15)+';'+lh(15,1.8)+'color:'+C.LIST2+';letter-spacing:.3px',
+    li:'margin:0 0 10px;font-size:'+px(BASE.p)+';'+lh(BASE.p,1.8)+'color:'+C.ORANGE,
+    li2:'margin:0 0 8px;font-size:'+px(15)+';'+lh(15,1.8)+'color:'+C.LIST2,
+    caption:'margin:-10px 0 24px;text-align:center;font-size:'+px(BASE.cap)+';'+lh(BASE.cap,1.6)+'color:'+C.TEXT2+';letter-spacing:.3px',
+    table:'width:100%;border-collapse:collapse;margin:0 0 22px;font-size:'+px(BASE.tab)+';'+lh(BASE.tab,1.7),
+    th:'background:'+C.DEEP+';color:#fff;padding:10px 12px;border:1px solid '+C.DEEP+';text-align:left;font-weight:600;font-size:'+px(BASE.tab)+';'+lh(BASE.tab,1.6),
+    td:'padding:10px 12px;border:1px solid '+C.BORDER+';color:'+C.TEXT+';font-size:'+px(BASE.tab)+';'+lh(BASE.tab,1.7),
+    zebra:'background:'+C.ZEBRA,
+    img:'max-width:100%;height:auto;border-radius:6px;display:block;margin:16px auto',
+    alertBox:function(t){
+      /* 五色提示块随主题走：[底, 左条]，徽章底另行取 LABC（白字底过 AA） */
+      var map=(THEMES[OPT.theme]&&THEMES[OPT.theme].alerts)||THEMES.zhongdeng.alerts;
+      var c=map[t]||map.NOTE;
+      return 'margin:0 0 22px;padding:14px 16px;background:'+c[0]+';border-left:4px solid '+c[1]+';color:'+C.TEXT+';font-size:'+px(15)+';'+lh(15,1.85)+'border-radius:0 6px 6px 0';
+    },
+    alertP:'margin:0;font-size:'+px(15)+';'+lh(15,1.85)+'color:'+C.TEXT+';letter-spacing:.3px',
+    alertIcon:'font-size:14px;font-weight:700;margin-right:7px'
+  };
+}
+var S=buildS();
+
+/* ===== markdown-it 初始化 ===== */
+var md = window.markdownit({html:true,breaks:false,linkify:true,typographer:false});
+
+/* GFM 警告块识别：blockquote 首段 [!TYPE] */
+var alertParas=new WeakSet();
+md.core.ruler.push('gfm_alert', function(state){
+  var toks=state.tokens, i,j,k,depth,m,re=/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*\n?/;
+  for(i=0;i<toks.length;i++){
+    if(toks[i].type==='blockquote_open'){
+      j=i+1;
+      while(j<toks.length && toks[j].type!=='inline' && toks[j].type!=='blockquote_close') j++;
+      if(j<toks.length && toks[j].type==='inline' && (m=re.exec(toks[j].content))){
+        toks[i].attrSet('data-alert', m[1]);
+        toks[j].content = toks[j].content.slice(m[0].length);
+        if(toks[j].children && toks[j].children.length && toks[j].children[0].type==='text'){
+          toks[j].children[0].content = toks[j].children[0].content.replace(re,'');
+        }
+        /* 标签徽章（不用 emoji：公众号内会渲染成彩色字符，破坏栏目配色）。
+           徽章一律白字（2026-09-15 用户定稿，深炭字观感不好已废弃）：
+           白字要过 WCAG AA 4.5:1，底色必须够深——说明 #ff5a00(白字3.13)→#d03800(4.94)、
+           注意 #e08a00(2.69)→#a06300(4.91) 同步加深；其余三色原本达标。
+           模块左条仍用亮色（#ff5a00/#e08a00），色相身份靠左条保留。 */
+        var LABC={NOTE:C.CHIP,TIP:C.BROWN,IMPORTANT:C.STRONG,WARNING:'#a06300',CAUTION:'#cf3b2a'};
+        if(toks[j].children){
+          var ch=toks[j].children;
+          /* 清掉 [!TYPE] 残留的空文本与换行，否则徽章与正文之间会多空一行 */
+          while(ch.length && ((ch[0].type==='text' && ch[0].content.trim()==='') || ch[0].type==='softbreak')) ch.shift();
+          var icon=new state.Token('html_inline','',0);
+          /* 徽章用行内元素（不用 inline-block）：inline-block 会在段落里多切出一个行框碎片，
+             而行高类检测会数行框，少一个碎片少一分被误判的机会；视觉上二者一致。 */
+          icon.content='<span style="padding:1px 7px;margin-right:8px;background:'+
+            (LABC[m[1]]||C.BROWN)+';color:#fff;border-radius:3px;font-size:12px;font-weight:700;letter-spacing:1px;'+lh(12,1.6)+'">'+
+            (ICONS_ZH[m[1]]||'提示')+'</span>';
+          ch.unshift(icon);
+        }
+        /* 标记 alert 内段落：去掉段间距，避免块内多余空白 */
+        depth=0;
+        for(k=i;k<toks.length;k++){
+          if(toks[k].type==='blockquote_open') depth++;
+          else if(toks[k].type==='blockquote_close'){ depth--; if(depth===0) break; }
+          else if(toks[k].type==='paragraph_open' && depth>=1) alertParas.add(toks[k]);
+        }
+      }
+    }
+  }
+  return true;
+});
+/* 引用块内换行保真：连续 "> " 行在标准 Markdown 里属同一段（softbreak 渲染成空格），
+   中文写作里引用的每一行通常是独立一条 → 引用块范围内的 softbreak 改渲染为 <br>，
+   正文段落不受影响（保持标准 Markdown 语义）。嵌套引用按深度计数同样生效。 */
+md.core.ruler.push('quote_breaks', function(state){
+  var toks=state.tokens, depth=0, i, j;
+  for(i=0;i<toks.length;i++){
+    if(toks[i].type==='blockquote_open') depth++;
+    else if(toks[i].type==='blockquote_close') depth--;
+    else if(depth>0 && toks[i].type==='inline' && toks[i].children){
+      for(j=0;j<toks[i].children.length;j++){
+        if(toks[i].children[j].type==='softbreak'){
+          var br=new state.Token('html_inline','',0);
+          br.content='<br>';
+          toks[i].children[j]=br;
+        }
+      }
+    }
+  }
+  return true;
+});
+/* 中英文间加空格 */
+md.core.ruler.push('cjk_spacing', function(state){
+  state.tokens.forEach(function(tok){
+    if(tok.type==='inline' && tok.children){
+      tok.children.forEach(function(c){
+        if(c.type==='text'){
+          c.content=c.content
+            .replace(/([\u4e00-\u9fa5])([a-zA-Z0-9])/g,'$1 $2')
+            .replace(/([a-zA-Z0-9])([\u4e00-\u9fa5])/g,'$1 $2');
+        }
+      });
+    }
+  });
+  return true;
+});
+
+/* 中文排版细节：首段导语强调 + 图片题注 */
+var leadParas=new WeakSet(), capParas=new WeakSet();
+md.core.ruler.push('zh_typeset', function(state){
+  var t=state.tokens,i,j;
+  /* h1 之后的首个段落 → 导语（略大字、略深色），杂志开篇感 */
+  for(i=0;i<t.length;i++){
+    if(t[i].type==='heading_close' && t[i].tag==='h1'){
+      j=i+1;
+      while(j<t.length && t[j].type!=='paragraph_open' && t[j].type!=='heading_open'
+            && t[j].type!=='blockquote_open' && t[j].type!=='fence') j++;
+      if(j<t.length && t[j].type==='paragraph_open') leadParas.add(t[j]);
+      break;
+    }
+  }
+  /* 独立成段的图片 + 紧跟的纯斜体段落 → 居中灰色题注 */
+  for(i=0;i<t.length;i++){
+    if(t[i].type==='inline' && t[i].children && t[i].children.length===1
+       && t[i].children[0].type==='image'
+       && t[i+2] && t[i+2].type==='paragraph_open' && t[i+3] && t[i+3].type==='inline'){
+      var c=t[i+3].children;
+      if(c && c.length>=3 && c[0].type==='em_open' && c[c.length-1].type==='em_close') capParas.add(t[i+2]);
+    }
+  }
+  return true;
+});
+
+/* renderer：给每个 token 加内联 style */
+function setStyle(tok,style){ tok.attrSet('style', style); return tok; }
+function wrap(tokens,idx,options,env,self,style){
+  setStyle(tokens[idx], style); return self.renderToken(tokens, idx, options);
+}
+md.renderer.rules.paragraph_open   = function(t,i,o,e,s){
+  var st=S.p;
+  if(capParas.has(t[i])) st=S.caption;
+  else if(alertParas.has(t[i])) st=S.alertP;
+  else if(leadParas.has(t[i])) st=S.lead;
+  return wrap(t,i,o,e,s,st);
+};
+md.renderer.rules.heading_open    = function(t,i,o,e,s){
+  var st= S[t[i].tag] || S.h4; return wrap(t,i,o,e,s,st);
+};
+md.renderer.rules.strong_open     = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.strong); };
+md.renderer.rules.em_open         = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.em); };
+md.renderer.rules.link_open       = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.a); };
+/* 列表深度计数：一级用主样式，嵌套（二级）用「退半步」样式 S.ul2/S.li2 */
+var listDepth=0;
+md.renderer.rules.bullet_list_open= function(t,i,o,e,s){ listDepth++; return wrap(t,i,o,e,s, listDepth>1?S.ul2:S.ul); };
+md.renderer.rules.bullet_list_close= function(t,i,o,e,s){ listDepth--; return s.renderToken(t,i,o); };
+md.renderer.rules.ordered_list_open=function(t,i,o,e,s){ listDepth++; return wrap(t,i,o,e,s, listDepth>1?S.ol2:S.ol); };
+md.renderer.rules.ordered_list_close=function(t,i,o,e,s){ listDepth--; return s.renderToken(t,i,o); };
+md.renderer.rules.list_item_open  = function(t,i,o,e,s){ return wrap(t,i,o,e,s, listDepth>1?S.li2:S.li); };
+/* 分割线 V1：短粗橙条（36×4px 圆角实条）——杂志「呼吸停顿」符号，扫读时看得见。
+   坑：微信粘贴解析会剥掉无内容的空标签——空 span 被删后只剩 34px 空隙（2026-09-16 实测）。
+   防剥：条里塞一个 nbsp；font/line 4px 与条同高（不撑行框、内容高÷矩形数=4≥0.95×4 过叠字检测）；
+   overflow:hidden 让有内容后基线仍按盒底对齐（vertical-align:middle 位置不变）。 */
+md.renderer.rules.hr             = function(){
+  return '<section style="text-align:center;margin:34px 0">'+
+    '<span style="display:inline-block;width:36px;height:4px;border-radius:2px;background:'+C.ORANGE+';vertical-align:middle;overflow:hidden;font-size:4px;'+lh(4,1)+'">&#160;</span></section>';
+};
+md.renderer.rules.table_open      = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.table); };
+md.renderer.rules.th_open        = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.th); };
+md.renderer.rules.td_open        = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.td); };
+md.renderer.rules.image          = function(t,i,o,e,s){
+  var tok=t[i], ai=tok.attrIndex('alt');
+  if(ai>=0) tok.attrs[ai][1]=s.renderInlineAsText(tok.children,o,e);
+  setStyle(tok,S.img); return s.renderToken(t,i,o);
+};
+md.renderer.rules.code_inline    = function(t,i,o,e,s){
+  return '<code style="'+S.code+'">'+escapeHtml(t[i].content)+'</code>';
+};
+md.renderer.rules.fence = function(t,i,o,e,s){
+  var code=t[i].content;
+  return '<pre style="'+S.pre+'">'+escapeHtml(code)+'</pre>';
+};
+md.renderer.rules.code_block = md.renderer.rules.fence;
+/* blockquote → 全部渲染为 section（含 GFM 警告块特殊样式；不输出 data-* 属性，保持公众号 HTML 纯净） */
+md.renderer.rules.blockquote_open = function(t,i,o,e,s){
+  var a=t[i].attrGet('data-alert');
+  return '<section style="'+(a?S.alertBox(a):S.blockquote)+'">';
+};
+md.renderer.rules.blockquote_close = function(){ return '</section>'; };
+
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ===== 容器指令：结构化排版模块（橙墨） =====
+   借鉴 md2wechat「内容不改变写法，用模块组织重点」的思路，
+   三个最贴栏目感的模块：intro（栏目开场）/ quote（金句卡）/ steps（步骤清单）。
+   微信公众号不认 flex/grid，故用 table 布局保稳。 */
+var ICONS_ZH={NOTE:'说明',TIP:'提示',IMPORTANT:'重点',WARNING:'注意',CAUTION:'警告'};
+function esc(s){return escapeHtml(s==null?'':String(s));}
+function mdInline(s){ return s? md.renderInline(s) : ''; }
+function n2(i){ return i<10?'0'+i:''+i; }
+
+var DIRECTIVES={
+  /* 栏目开场 masthead —— 期次、主标题、副题、元信息 */
+  intro:function(o){
+    return '<section style="margin:0 0 26px;padding:18px 16px 16px;background:'+C.WARMBG+';border-top:3px solid '+C.ORANGE+';border-radius:0 4px 4px 4px">'+
+      (o.eyebrow?'<section style="margin:0 0 10px;font-size:'+px(12.5)+';'+lh(12.5,1.6)+'color:'+C.DEEP+';letter-spacing:2px;font-weight:700">'+esc(o.eyebrow)+'</section>':'')+
+      (o.title?'<section style="margin:0 0 10px;font-size:'+px(22)+';'+lh(22,1.45)+'font-weight:700;color:'+C.DEEP+';letter-spacing:.5px">'+esc(o.title)+'</section>':'')+
+      (o.subtitle?'<section style="margin:0;font-size:'+px(15)+';'+lh(15,1.8)+'color:'+C.TEXT2+';letter-spacing:.3px">'+mdInline(o.subtitle)+'</section>':'')+
+      (o.meta?'<section style="margin:12px 0 0;padding-top:10px;border-top:1px solid #ffffff;font-size:'+px(12.5)+';'+lh(12.5,1.6)+'color:'+C.TAN+';letter-spacing:1px">'+esc(o.meta)+'</section>':'')+
+      '</section>';
+  },
+  /* 金句卡 —— 文中用一个判断收住一段论述 */
+  quote:function(o){
+    return '<section style="margin:0 0 26px;padding:20px 18px;background:'+C.WARMBG+';border-left:4px solid '+C.ORANGE+';border-radius:0 6px 6px 0">'+
+      '<section style="margin:0 0 6px;color:'+C.STRONG+';font-size:'+px(30)+';'+lh(30,1)+'font-weight:700">&#8220;</section>'+
+      '<section style="margin:0;font-size:'+px(18)+';'+lh(18,1.8)+'color:'+C.DEEP+';font-weight:700;letter-spacing:.3px">'+mdInline(o.text||o.quote||'')+'</section>'+
+      (o.from?'<section style="margin:12px 0 0;font-size:'+px(13)+';'+lh(13,1.6)+'color:'+C.TAN+';text-align:right;letter-spacing:.5px">&#8212; '+esc(o.from)+'</section>':'')+
+      '</section>';
+  },
+  /* 步骤清单 —— 每行：标题 | 说明（说明可省） */
+  steps:function(o,title,raw){
+    var items=(raw||[]).map(function(l){
+      var p=l.split('|');
+      return {t:(p[0]||'').trim(), d:(p[1]||'').trim()};
+    }).filter(function(it){ return it.t!==''; });
+    if(!items.length) return '';
+    var rows=items.map(function(it,idx){
+      var last=(idx===items.length-1), pb=last?'0':'16px';
+      /* 行分隔线用纯白：米色底模块内部隔线一律白色（用户定稿），只在非首行画 */
+      var line=idx===0?'':'border-top:1px solid #ffffff;';
+      var padTop=idx===0?'0':'16px';
+      return '<tr>'+
+        '<td style="'+line+'width:30px;vertical-align:top;padding:'+padTop+' 0 '+pb+'">'+
+          '<span style="display:inline-block;width:24px;height:24px;background:'+C.CHIP+';color:#fff;border-radius:50%;text-align:center;font-size:'+px(12)+';'+lh(12,2)+'font-weight:700">'+n2(idx+1)+'</span>'+
+        '</td>'+
+        '<td style="'+line+'vertical-align:top;padding:'+padTop+' 0 '+pb+'">'+
+          '<section style="margin:0 0 3px;font-size:'+px(BASE.p)+';'+lh(BASE.p,1.7)+'font-weight:700;color:'+C.DEEP+';letter-spacing:.3px">'+mdInline(it.t)+'</section>'+
+          (it.d?'<section style="margin:0;font-size:'+px(15)+';'+lh(15,1.8)+'color:'+C.TXTQ+';letter-spacing:.3px">'+mdInline(it.d)+'</section>':'')+
+        '</td>'+
+      '</tr>';
+    }).join('');
+    return '<section style="margin:0 0 26px;padding:18px 16px;background:'+C.WARMBG+';border-left:4px solid '+C.ORANGE+';border-radius:0 6px 6px 0">'+
+      (title?'<section style="margin:0 0 14px;font-size:'+px(15)+';'+lh(15,1.6)+'font-weight:700;color:'+C.DEEP+';letter-spacing:.5px">'+esc(title)+'</section>':'')+
+      '<table style="width:100%;border-collapse:collapse;border:none;font-size:'+px(BASE.p)+';'+lh(BASE.p,1.7)+'">'+rows+'</table>'+
+      '</section>';
+  },
+  /* 观点提炼卡 —— 本期的一句话判断（用比表头更亮的深橙，避免两块同色显沉） */
+  point:function(o){
+    return '<section style="margin:0 0 26px;padding:18px 16px;background:'+C.DEEP+';border-radius:6px">'+
+      (o.eyebrow?'<section style="margin:0 0 8px;font-size:'+px(12.5)+';'+lh(12.5,1.6)+'color:'+C.PTEYE+';letter-spacing:2px;font-weight:700">'+esc(o.eyebrow)+'</section>':'')+
+      '<section style="margin:0;font-size:'+px(18)+';'+lh(18,1.75)+'color:#ffffff;font-weight:700;letter-spacing:.3px">'+mdInline(o.text||o.title||'')+'</section>'+
+      (o.note?'<section style="margin:10px 0 0;font-size:'+px(13)+';'+lh(13,1.7)+'color:'+C.PTNOTE+';letter-spacing:.3px">'+esc(o.note)+'</section>':'')+
+      '</section>';
+  }
+};
+
+function expandDirectives(src){
+  if(src.indexOf(':::')===-1) return src;
+  var lines=src.split('\n'), out=[], i=0;
+  var OPEN=/^:::([a-zA-Z][\w-]*)\s*(?:\[([^\]]*)\])?\s*$/;
+  var KV  =/^\s*([A-Za-z][\w-]*)\s*:\s*(.*)$/;
+  while(i<lines.length){
+    var m=OPEN.exec(lines[i]);
+    if(!m){ out.push(lines[i]); i++; continue; }
+    var type=m[1].toLowerCase(), title=(m[2]||'').trim(), body=[], j=i+1;
+    while(j<lines.length && lines[j].trim()!==':::'){ body.push(lines[j]); j++; }
+    var fn=DIRECTIVES[type];
+    if(fn){
+      var o={}, raw=[];
+      body.forEach(function(l){
+        var mm=KV.exec(l);
+        if(mm) o[mm[1].toLowerCase()]=mm[2].trim();
+        else if(l.trim()!=='') raw.push(l);
+      });
+      out.push('', fn(o,title,raw,body), '');   /* 前后留空行，保证被识别为块级 HTML */
+    }else{
+      out.push(lines[i]); body.forEach(function(l){out.push(l);});   /* 未知指令原样保留 */
+      if(j<lines.length) out.push(':::');
+    }
+    i=(j<lines.length? j+1 : j);
+  }
+  return out.join('\n');
+}
+
+/* ===== DOM ===== */
+var $=function(id){return document.getElementById(id);};
+var editor=$('editor'), preview=$('preview'), charCount=$('charCount'), bodyCount=$('bodyCount');
+/* 公众号「字数」口径估算（2026-09-16 用 08 期真文校准）：
+   预览纯文本 2454 vs 微信实测推算 2428，误差约 1%；其余口径（源文字符数 3035、
+   去空白 2539、英文按词 2314）偏差都在 100+。规则：中文字符与中文标点各计 1，
+   英文字母/数字每个计 1（不是按词），emoji 计 1，空白与英文标点不计，图片不计。 */
+function wechatCount(s){
+  var m=s.match(/[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef\u201c\u201d\u2018\u2019\u2014\u2026\u00b7\u300c\u300d\u300e\u300f]|[\uD83C-\uD83E][\uDC00-\uDFFF]|[\u2600-\u27BF]|[A-Za-z0-9]/g);
+  return m?m.length:0;
+}
+var saveStatus=$('saveStatus'), checkBadge=$('checkBadge'), checkPanel=$('checkPanel');
+var toastEl=$('toast');
+var SAVE_KEY='中登排版台.draft.v1';
+var timer=null, saveTimer=null;
+
+/* ===== 渲染 ===== */
+/* 两侧安全边距：包一层带 padding 的 section。
+   为什么必须加：公众号阅读页自带的左右留白不确定且很窄，曲面屏边缘是弧形畸变区，
+   正文顶到边缘会被"吃掉"一角。14px 是 softer 的默认（约合 20 字宽/行）。 */
+/* ===== 脚注（L1.5·被动渲染）：[^id] 引用 + [^id]: 内容 定义 =====
+   2026-09-16 复核定稿：只保留**被动渲染**，无任何按钮——作者在 MD 里手写
+   [^id] 标记才生效，没有参考的文章零影响（这就是「不是每篇都有参考」的答案）。
+   公众号不支持锚点跳转（<a href="#..."> 会被过滤），所以脚注=正文上标编号 + 文末小字「参考」块，
+   编号按正文首次出现顺序重排（不是定义顺序），未被正文引用的定义排在最后仍会列出。
+   上标/编号用深橙 C.EMBER（白底对比度 4.7:1，过 AA）；内容用 C.TXTQ（8:1）。
+   代码围栏内的 [^...] 不处理。曾有的「参考→脚注」按钮版（含主动转换/双向往返）在
+   _备份/2026-09-15-L1.5脚注功能版-双向与白字徽章/，有需求再捞。 */
+function fnSup(n){
+  return '<sup style="font-size:'+px(11)+';'+lh(11,1.4)+'color:'+C.EMBER+';font-weight:700">['+n+']</sup>';
+}
+function extractFootnotes(src){
+  var lines=src.split('\n'), kept=[], defs={}, defOrder=[];
+  var fence=false;
+  for(var i=0;i<lines.length;i++){
+    var ln=lines[i];
+    if(/^\s*(```|~~~)/.test(ln)) fence=!fence;
+    if(!fence){
+      var dm=/^\[\^([^\]\s]+)\]\s*:\s*(.*)$/.exec(ln);
+      if(dm){ if(defs[dm[1]]==null){ defs[dm[1]]=dm[2]; defOrder.push(dm[1]); } continue; }
+    }
+    kept.push(ln);
+  }
+  if(!defOrder.length) return {text:src, html:'', refCount:0, defCount:0};   /* 无定义=零改动快路径 */
+  /* 引用：按正文首次出现顺序编号并替换为上标 */
+  var text=kept.join('\n'), nums={}, seq=0, refsFound=[];
+  var lines2=text.split('\n'); fence=false;
+  for(var j=0;j<lines2.length;j++){
+    var L=lines2[j];
+    if(/^\s*(```|~~~)/.test(L)) fence=!fence;
+    if(fence) continue;
+    var re=/\[\^([^\]\s]+)\]/g, fm, changed=false;
+    while((fm=re.exec(L))){
+      var id=fm[1];
+      if(nums[id]==null){ seq++; nums[id]=seq; refsFound.push(id); }
+      L=L.replace(fm[0], fnSup(nums[id]));
+      re.lastIndex=0; changed=true;         /* 行内容已变，重新扫描本行 */
+    }
+    if(changed) lines2[j]=L;
+  }
+  text=lines2.join('\n');
+  /* 组装文末块：已引用的按编号在前，未引用的定义排后（编号位显示 ·）
+     保留 id r0 是旧「参考→脚注」按钮版存的原标题行，不进渲染块、不进计数（兼容旧草稿） */
+  var cmap={}; defOrder.forEach(function(id){ if(id!=='r0') cmap[id]=defs[id]; });
+  var ordered=[];
+  refsFound.forEach(function(id){ if(cmap[id]!=null){ ordered.push({n:nums[id],content:cmap[id]}); delete cmap[id]; } });
+  defOrder.forEach(function(id){ if(cmap[id]!=null) ordered.push({n:0,content:cmap[id]}); });
+  var html='';
+  if(ordered.length){
+    var rows=ordered.map(function(it){
+      return '<section style="margin:0 0 8px;font-size:'+px(13)+';'+lh(13,1.7)+'color:'+C.TXTQ+';letter-spacing:.3px">'+
+        '<span style="color:'+C.EMBER+';font-weight:700;font-size:'+px(12.5)+';'+lh(12.5,1.5)+'">['+(it.n||'·')+']</span> '+
+        mdInline(it.content)+'</section>';
+    }).join('');
+    html='<section style="margin:36px 0 0;padding-top:14px;border-top:1px solid '+C.BORDER+'">'+
+      '<section style="margin:0 0 10px;font-size:'+px(13.5)+';'+lh(13.5,1.5)+'font-weight:700;color:'+C.BROWN+';letter-spacing:2px">参考</section>'+
+      rows+'</section>';
+  }
+  return {text:text, html:html, refCount:refsFound.length, defCount:ordered.length};
+}
+function render(){
+  var src=editor.value;
+  try{
+    var expanded=expandDirectives(src);
+    var fn=extractFootnotes(expanded);   /* 脚注：摘出定义、编号引用，文末追加「参考」块（无 [^] 定义时零改动） */
+    /* 始终包一层 .fm-article：既是两侧安全边距的载体，也是「一键复制」取正文的锚点 */
+    var padStyle=OPT.pad>0 ? ('padding:0 '+OPT.pad+'px;box-sizing:border-box') : 'box-sizing:border-box';
+    preview.innerHTML='<section class="fm-article" style="'+padStyle+'">'+md.render(fn.text)+fn.html+'</section>';
+    polish();                       /* 斑马纹等纯 DOM 层精修（内联样式，复制同样带走） */
+  }catch(err){
+    preview.innerHTML='<div style="color:#c0392b;padding:10px">渲染错误：'+escapeHtml(err.message)+'</div>';
+  }
+  /* 左侧统计=Markdown 源文全部字符（含语法符号，与 VSCode 字符数同口径）；
+     右侧=公众号口径估算（见 wechatCount），两边对照即可评估成文长度。 */
+  charCount.textContent='源文 '+src.length+' 字';
+  if(preview.querySelector('.fm-article')) bodyCount.textContent='正文 '+wechatCount(preview.querySelector('.fm-article').textContent)+' 字';
+  scheduleCheck();
+}
+/* ===== 行内文本包 <span leaf> =====
+   公众号「内容结构检测」里有一条 line-height-overlapping（文档 2.3.2），实测口径是：
+     range.selectNodeContents(块) → rects = getClientRects() → 行数 = rects.length
+     内容高度 ÷ 行数 < 0.95×字号 且 行数≥2  ⇒ 判「行高小于字体大小，多行文字可能重叠」
+   Chrome 的 getClientRects 会把**一行里的每个行内片段各返回一个矩形**，
+   所以段落里只要出现 **加粗**，矩形数就翻倍（1 行能算成 3~4 行），平均行高被算成几分之一 → 必然误报。
+   官方规范结构是 <section><span leaf="">文字</span></section>：文字都在 span 里，
+   块容器**没有直接文本子节点**；而该检测的兜底分支明确只检查「有直接文本子节点」的块
+   （collectLineHeightFallback 的 hasDirectText 判断）→ 包一层即彻底避开这类误判。
+   实测（07 原文）：不包 → 585/677/375px 三种宽度分别被判 27/30/23 处；
+   包上 → 两种判定路径（兜底 + Range 主路径）在三种宽度下均为 0。 */
+function wrapTextRuns(root){
+  var els=root.querySelectorAll('*');
+  for(var i=0;i<els.length;i++){
+    var el=els[i];
+    /* 列表文字回染：圆点颜色继承 li 的 color（亮橙），文字用 span 染回正文色；
+       二级列表文字用浅一档的暖灰。其他元素不染色。 */
+    var liColor=null;
+    if(el.tagName==='LI'){
+      var d=0,n=el;
+      while(n&&n!==root){ if(n.tagName==='UL'||n.tagName==='OL') d++; n=n.parentElement; }
+      liColor = d>1 ? C.TXTQ : C.TEXT;
+    }
+    var kids=[].slice.call(el.childNodes);
+    for(var j=0;j<kids.length;j++){
+      var n=kids[j];
+      if(n.nodeType!==3) continue;                 /* 只看直接文本节点 */
+      if(!n.textContent.trim().length) continue;   /* 纯空白/换行不参与判定，原样留着 */
+      var sp=document.createElement('span');
+      sp.setAttribute('leaf','');                  /* 与官方示例一致的行内叶子容器 */
+      if(liColor) sp.setAttribute('style','color:'+liColor);
+      el.insertBefore(sp,n);
+      sp.appendChild(n);
+    }
+  }
+}
+/* 表格斑马纹：nth-child 在公众号不可用，改为直接写内联背景 */
+function polish(){
+  preview.querySelectorAll('table').forEach(function(tb){
+    Array.prototype.forEach.call(tb.querySelectorAll('tr'), function(tr,i){
+      if(tr.querySelector('th')) return;
+      if(i%2===1) tr.querySelectorAll('td').forEach(function(td){
+        td.style.background=S.zebra;
+      });
+    });
+  });
+  /* 引用块/警告块「下松上紧」修复：容器内最后一个子元素的 margin-bottom 会叠进
+     padding-bottom（22px 段距 + 13px 内边距），底部比顶部多出近一行。
+     公众号无 :last-child，渲染后在 DOM 里直接清零（随复制一起带出，微信内同样生效）。 */
+  preview.querySelectorAll('section').forEach(function(q){
+    var st=q.getAttribute('style')||'';
+    if(st.indexOf('border-radius:0 6px 6px 0')<0) return;   /* 只有引用块/警告块有此圆角 */
+    var kids=q.children;
+    if(kids.length) kids[kids.length-1].style.marginBottom='0';
+  });
+  wrapTextRuns(preview);                            /* 必须最后做：包完块容器就没有直接文本了 */
+}
+function scheduleCheck(){
+  clearTimeout(timer); timer=setTimeout(runCheck,400);
+}
+
+/* ===== 合规自检器（对齐官方 wechatjs/verify-article-structure-spec 的判定口径） ===== */
+function normalizeFont(s){ return (s||'').replace(/["']/g,'').replace(/\s+/g,' ').trim(); }
+function runCheck(){
+  var issues=[];
+  var all=preview.querySelectorAll('*');
+  /* 1.3 行高单位：线上检测的旧口径是「元素高度 ÷ parseFloat(line-height)」估算行数，
+     无单位值 1.8 会被当成 1.8px → 估出几十行 → 平均行高 1.8 < 字号 → 误报
+     「行高小于字体大小，多行文字可能重叠」。doocs 默认样式踩的也是这个坑。
+     —— 这是本次踩坑的根因，故按 error 报。 */
+  all.forEach(function(el){
+    var st=el.getAttribute('style')||'';
+    var m=st.match(/line-height\s*:\s*([\d.]+)\s*(?=;|$)/i);
+    if(m){
+      var fs=parseFloat(getComputedStyle(el).fontSize);
+      var fixed=(isFinite(fs)&&isFinite(parseFloat(m[1]))) ? (Math.round(fs*parseFloat(m[1])*10)/10+'px') : '（如 28.8px）';
+      issues.push({rule:'1.3 行高单位',el:el,sev:'error',
+        desc:'line-height:'+m[1]+' 是无单位值，线上按 px 解析会误判「行高小于字号」，请写成 '+fixed});
+    }
+  });
+  /* 1.3 真叠字（官方排除：内部无文字 / 实际单行） */
+  all.forEach(function(el){
+    if(!el.textContent || el.textContent.trim()==='') return;
+    var cs=getComputedStyle(el);
+    var fs=parseFloat(cs.fontSize), lhv=parseFloat(cs.lineHeight);
+    if(!isNaN(lhv)&&!isNaN(fs)&&lhv>0&&lhv<fs){
+      var h=el.getBoundingClientRect().height;
+      if(h>lhv*1.6){ issues.push({rule:'1.3 行高叠字',el:el,sev:'error',
+        desc:'line-height '+lhv.toFixed(1)+'px 小于字号 '+fs.toFixed(1)+'px，多行文字会重叠'}); }
+    }
+  });
+  /* 1.3 行高叠字（官方「实测」口径，回归护栏）：复刻官方布局检测的兜底分支
+     collectLineHeightFallback —— 只挑「有直接文本子节点」的块，把 Range 的矩形数当行数，
+     内容高度 ÷ 矩形数 < 0.95×字号 且 矩形数≥2 即判叠字。
+     正常情况下这里必然是 0 项：正文文字都装在 <span leaf> 里，块容器没有直接文本。
+     哪天误删了 wrapTextRuns（polish 里那一行），这条会立刻亮起来。 */
+  var BLOCKS=['p','div','section','h1','h2','h3','h4','h5','h6','li','td','a'];
+  all.forEach(function(el){
+    if(BLOCKS.indexOf(el.tagName.toLowerCase())===-1) return;
+    var direct=false;
+    Array.prototype.forEach.call(el.childNodes,function(c){
+      if(c.nodeType===3 && (c.textContent||'').trim().length) direct=true;
+    });
+    if(!direct) return;
+    if(!(el.textContent||'').trim().length) return;
+    var fs=parseFloat(getComputedStyle(el).fontSize);
+    var rg=document.createRange(); rg.selectNodeContents(el);
+    var rects=Array.prototype.filter.call(rg.getClientRects(),function(x){return x.height>0;});
+    var ch=rg.getBoundingClientRect().height;
+    if(rects.length>=2 && ch/rects.length < fs*0.95){
+      issues.push({rule:'1.3 行高叠字',el:el,sev:'error',
+        desc:'官方实测口径命中：块容器里有直接文本（矩形数 '+rects.length+'，平均行高 '+(ch/rects.length).toFixed(1)+
+             'px < 字号 '+fs.toFixed(1)+'px 的 0.95 倍）。多因段内 **加粗** 被 getClientRects 拆成多个矩形；'+
+             '正文需包在 <span leaf> 里（见 polish → wrapTextRuns）'});
+    }
+  });
+  /* 1.6 text-align start/end —— 只查内联显式设置（Chrome 对默认值返回 start，读 computed 会全量误报） */
+  all.forEach(function(el){
+    var st=el.getAttribute('style')||'';
+    var m=st.match(/text-align\s*:\s*(start|end)\b/i);
+    if(m){ issues.push({rule:'1.6 text-align',el:el,sev:'error',
+      desc:'显式设置了 text-align:'+m[1]+'（违禁值），跨设备对齐不一致，请改 left/center/right'}); }
+  });
+  /* 3 字体：官方白名单只放行 "mp-quote", PingFang SC, system-ui, -apple-system 这一条链；
+     其它任何 font-family（含浏览器复制时泄漏进来的系统字体栈）都会被判违规 */
+  var FONTFAM=/font-family\s*:\s*([^;]+)/i;
+  var ALLOW_FF=normalizeFont('"mp-quote", PingFang SC, system-ui, -apple-system');
+  all.forEach(function(el){
+    var st=el.getAttribute('style')||'', m=FONTFAM.exec(st);
+    if(!m) return;
+    if(normalizeFont(m[1]).indexOf(ALLOW_FF)!==0){
+      issues.push({rule:'3 字体',el:el,sev:'warn',
+        desc:'font-family:'+m[1].slice(0,36)+' 不在官方白名单内（只放行 mp-quote / PingFang SC / system-ui / -apple-system 这条链）'});
+    }
+  });
+  /* 表格列数：手机端挤压 */
+  preview.querySelectorAll('table').forEach(function(tb){
+    var tr=tb.querySelector('tr');
+    if(tr && tr.children.length>4){ issues.push({rule:'表格列数',el:tb,sev:'warn',
+      desc:'表格 '+tr.children.length+' 列，手机端会被挤压，建议 ≤4 列或改成列表'}); }
+  });
+  /* 1.8 pre 滥用 */
+  preview.querySelectorAll('pre').forEach(function(el){
+    var t=el.textContent||'';
+    if(t.length>40 && t.indexOf('\n')===-1){ issues.push({rule:'1.8 pre',el:el,sev:'warn',desc:'pre 内为长文本且无换行，建议改用 p'}); }
+  });
+  /* 1.4 固定宽度溢出 */
+  all.forEach(function(el){
+    var st=el.getAttribute('style')||'';
+    var m=st.match(/width\s*:\s*(\d+)\s*px/i);
+    if(m && parseInt(m[1],10)>677){ issues.push({rule:'1.4 宽度溢出',el:el,sev:'warn',desc:'width '+m[1]+'px 超 677px 安全区，移动端会截断'}); }
+  });
+  /* 空链接 */
+  preview.querySelectorAll('a').forEach(function(el){
+    if((el.textContent||'').trim()==='' && !el.querySelector('img')){ issues.push({rule:'空链接',el:el,sev:'warn',desc:'空 &lt;a&gt; 标签，读者无法点击'}); }
+  });
+  /* 3.1 嵌套层级限制（官方规范 2026-09 口径：同标签连续嵌套 ≤15 层，超了会被自动删节点） */
+  var NEST_MAX=15, nestHits=[];
+  function walkNest(node){
+    if(!node||node.nodeType!==1) return;
+    var tag=node.tagName.toLowerCase(), st=node.getAttribute('style')||'';
+    var n=1, cur=node;
+    while(cur.children.length===1){
+      var ch=cur.firstElementChild;
+      if(ch.tagName.toLowerCase()===tag && (ch.getAttribute('style')||'')===st){ n++; cur=ch; }
+      else break;
+    }
+    if(n>NEST_MAX) nestHits.push({el:node,n:n});
+    for(var k=0;k<node.children.length;k++) walkNest(node.children[k]);
+  }
+  walkNest(preview);
+  nestHits.forEach(function(h){ issues.push({rule:'3.1 嵌套过深',el:h.el,sev:'error',
+    desc:'同标签+同样式单子连续嵌套 '+h.n+' 层（>'+NEST_MAX+'），公众号会自动删节点'}); });
+  /* 对比度（WCAG 2.x AA，L1.5 新增）：
+     普通文字 ≥4.5:1；大字（≥24px，或 ≥18.66px 且 font-weight≥700）≥3:1。
+     背景取「最近一个非透明背景」的祖先；页面外层按公众号白底 rgb(255,255,255) 计算。
+     注意：这是可读性质量项，不是公众号平台检测项——公众号线上不查对比度，
+     所以按 warn 报，避免与「会被平台拦」的 error 混在一起。 */
+  function parseRgb(s){
+    var m=/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)/.exec(s||'');
+    return m?{r:+m[1],g:+m[2],b:+m[3],a:(m[4]==null?1:+m[4])}:null;
+  }
+  function lin(v){ v/=255; return v<=0.03928? v/12.92 : Math.pow((v+0.055)/1.055,2.4); }
+  function relLum(c){ return 0.2126*lin(c.r)+0.7152*lin(c.g)+0.0722*lin(c.b); }
+  function contrast(a,b){ var l1=relLum(a),l2=relLum(b); return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); }
+  function rgbHex(c){ function h(v){ v=Math.round(v); return (v<16?'0':'')+v.toString(16); } return '#'+h(c.r)+h(c.g)+h(c.b); }
+  function effBg(el){
+    var n=el;
+    while(n && n!==preview){
+      var c=parseRgb(getComputedStyle(n).backgroundColor);
+      if(c && c.a>0.9) return c;
+      n=n.parentElement;
+    }
+    return {r:255,g:255,b:255,a:1};
+  }
+  var seenC={};
+  all.forEach(function(el){
+    var hasText=false;
+    Array.prototype.forEach.call(el.childNodes,function(c){
+      if(c.nodeType===3 && (c.textContent||'').trim().length) hasText=true;
+    });
+    if(!hasText) return;                      /* 只查真实文字；纯装饰（条/点/底色块）跳过 */
+    var cs=getComputedStyle(el);
+    var fg=parseRgb(cs.color); if(!fg) return;
+    var bg=effBg(el);
+    var fs=parseFloat(cs.fontSize)||16;
+    var w=parseInt(cs.fontWeight,10)||400;
+    var large=(fs>=24)||(fs>=18.66&&w>=700);
+    var need=large?3:4.5;
+    var ratio=contrast(fg,bg);
+    if(ratio<need){
+      var key=rgbHex(fg)+'|'+rgbHex(bg)+'|'+need;
+      if(!seenC[key]){
+        seenC[key]=1;
+        issues.push({rule:'对比度（WCAG）',el:el,sev:'warn',
+          desc:rgbHex(fg)+' on '+rgbHex(bg)+' = '+ratio.toFixed(2)+':1，低于'+(large?'大字':'正文')+'建议值 '+need+':1（可读性提示，不影响发布）'});
+      }
+    }
+  });
+  renderIssues(issues);
+}
+function renderIssues(issues){
+  checkBadge.textContent=issues.length;
+  checkBadge.className=issues.length?'':'zero';
+  var to=$('toggleCheck');
+  if(!issues.length){
+    checkPanel.innerHTML='<span id="toggleCheck">收起 ▾</span><div class="ok">✓ 全部通过，可安全复制发布</div>';
+  }else{
+    checkPanel.innerHTML='<span id="toggleCheck">收起 ▾</span><div class="cnt">检出 '+issues.length+' 项，点击可定位到对应位置</div>'+
+      issues.map(function(it,i){
+        var sev=it.sev==='error'?'违规':'提示';
+        return '<div class="issue" data-i="'+i+'"><b>'+it.rule+'</b> <span class="sev-'+it.sev+'">'+sev+'</span><br><small>'+it.desc+'</small></div>';
+      }).join('');
+  }
+  bindToggle();
+  checkPanel.querySelectorAll('.issue').forEach(function(d){
+    d.onclick=function(){
+      var i=+d.getAttribute('data-i');
+      highlightEl(issues[i].el);
+    };
+  });
+}
+function highlightEl(el){
+  preview.querySelectorAll('.__hl').forEach(function(e){e.classList.remove('__hl');});
+  if(el){ el.classList.add('__hl'); el.scrollIntoView({block:'center',behavior:'smooth'}); }
+}
+function bindToggle(){
+  var t=$('toggleCheck');
+  if(t) t.onclick=function(){
+    if(checkPanel.classList.contains('collapsed')){checkPanel.classList.remove('collapsed');t.textContent='收起 ▾';}
+    else{checkPanel.classList.add('collapsed');t.textContent='展开 ▸';}
+  };
+}
+
+/* ===== 一键复制：自建剪贴板内容，不让浏览器加工 =====
+   踩过的坑：以前是「选中预览 + document.execCommand('copy')」，把序列化交给浏览器。
+   Chrome 复制选区时会走 annotate-for-interchange，把本页 CSS 级联后的**计算样式**一并写进剪贴板，
+   实测粘出来的每个元素都带着：
+     box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",…;
+     text-align:start; text-indent:0px; orphans:2; widows:2; word-spacing:0px;
+     -webkit-text-stroke-width:0px; background-color:rgb(255,255,255); …
+   其中 text-align:start（官方 1.6 违禁值）和 font-family（官方 3 只放行
+   "mp-quote", PingFang SC, system-ui, -apple-system 这一条链）都会触发公众号的内容结构检测。
+   → 改为：先克隆正文做净化，再用 copy 事件的 clipboardData 直接写入我们构造的 HTML。 */
+var COPY_ROOT='.fm-article';
+/* 单个元素的内联样式净化：对齐 1.6 / 1.3 / 3、剔除浏览器可能附加的属性 */
+function sanitizeStyle(el,originEl){
+  var st=el.getAttribute('style'); if(!st) return;
+  var out=st;
+  /* 1.6 对齐：start/end 是违禁值，兜底改写成 left/right */
+  out=out.replace(/text-align\s*:\s*start/gi,'text-align:left')
+         .replace(/text-align\s*:\s*end/gi,'text-align:right');
+  /* 3 字体：正文不保留任何 font-family（官方只放行一条链，白名单外一律违规） */
+  out=out.replace(/font-family\s*:[^;]*;?/gi,'');
+  /* 浏览器序列化时可能夹带的 UA 属性，一并清掉 */
+  out=out.replace(/(orphans|widows|text-indent|word-spacing|-webkit-text-stroke-width|text-transform|font-variant-ligatures)\s*:[^;]*;?/gi,'');
+  /* 1.3 行高：无单位/百分比/em 一律折算 px，避开线上「高度 ÷ line-height」口径把 1.8 当 1.8px */
+  var m=/line-height\s*:\s*([^;\s]+)/i.exec(out);
+  if(m && !/^\d*\.?\d+px$/i.test(m[1])){
+    var cpx=parseFloat(getComputedStyle(originEl).lineHeight);
+    if(isFinite(cpx)&&cpx>0) out=out.replace(/line-height\s*:\s*[^;\s]+/i,'line-height:'+Math.round(cpx*10)/10+'px');
+    else out=out.replace(/line-height\s*:\s*[^;\s]+;?/i,'');
+  }
+  out=out.replace(/;\s*;/g,';').replace(/^\s*;+|;+\s*$/g,'');
+  if(out) el.setAttribute('style',out); else el.removeAttribute('style');
+}
+function cleanCopyHTML(){
+  var src=preview.querySelector(COPY_ROOT)||preview;
+  var box=src.cloneNode(true);
+  box.removeAttribute('class');                 /* 复制的 HTML 里不留工具的内部 class */
+  box.querySelectorAll('.__hl').forEach(function(e){ e.classList.remove('__hl'); });
+  var orig=src.querySelectorAll('*'), cl=box.querySelectorAll('*');
+  for(var i=0;i<orig.length;i++) sanitizeStyle(cl[i],orig[i]);
+  sanitizeStyle(box,src);                       /* 根 .fm-article：两侧安全边距那层也要带走 */
+  /* box-sizing 自己写的要留（保 padding 生效），但不能凭空多出来 */
+  return box.outerHTML;
+}
+function copyRich(){
+  var html=cleanCopyHTML();
+  var text=(preview.innerText||'').trim();
+  preview.querySelectorAll('.__hl').forEach(function(e){e.classList.remove('__hl');});
+  if(syncCopy(html,text)){ toast('✓ 已复制（纯净 HTML，未夹带浏览器附加样式）'); return; }
+  if(navigator.clipboard&&window.ClipboardItem){
+    navigator.clipboard.write([new ClipboardItem({
+      'text/html':new Blob([html],{type:'text/html'}),
+      'text/plain':new Blob([text],{type:'text/plain'})
+    })]).then(function(){ toast('✓ 已复制（纯净 HTML）'); }).catch(legacyCopy);
+    return;
+  }
+  legacyCopy();
+}
+/* 主路径：在 copy 事件里 setData —— 剪贴板里就是我们构造的字符串，浏览器不再加工 */
+function syncCopy(html,text){
+  var ok=false;
+  function onCopy(e){
+    try{
+      e.clipboardData.setData('text/html',html);
+      e.clipboardData.setData('text/plain',text);
+      e.preventDefault(); ok=true;
+    }catch(err){ ok=false; }
+  }
+  document.addEventListener('copy',onCopy,true);
+  var range=document.createRange(); range.selectNodeContents(preview);
+  var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+  try{ ok=document.execCommand('copy')&&ok; }catch(e){ ok=false; }
+  sel.removeAllRanges();
+  document.removeEventListener('copy',onCopy,true);
+  return ok;
+}
+/* 兜底：老办法（会被浏览器附加样式，仅在前两条路径都不可用时使用）。
+   仍然复制「净化后的正文」而非 Live 预览，避免把工具内部的 __hl 高亮等 UI 节点一起带走。 */
+function legacyCopy(){
+  var host=document.createElement('div');
+  host.setAttribute('style','position:fixed;left:-99999px;top:0;width:677px;opacity:0;pointer-events:none;');
+  host.innerHTML=cleanCopyHTML();
+  document.body.appendChild(host);
+  var range=document.createRange(); range.selectNodeContents(host);
+  var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+  var ok=false;
+  try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
+  sel.removeAllRanges();
+  document.body.removeChild(host);
+  toast(ok?'已复制（兼容模式，可能夹带浏览器附加样式，建议粘贴后点一次「清除格式」）':'复制失败，请手动选中复制');
+}
+
+/* ===== 输入/文件/拖拽 ===== */
+function loadText(txt,name){
+  editor.value=txt; render();
+  if(name) toast('已载入 '+name);
+}
+editor.addEventListener('input', function(){
+  render();
+  clearTimeout(saveTimer); saveTimer=setTimeout(saveDraft,800);
+});
+$('fileInput').addEventListener('change', function(e){
+  var f=e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){ loadText(r.result,f.name); };
+  r.readAsText(f,'utf-8');
+  e.target.value='';
+});
+editor.addEventListener('dragover', function(e){ e.preventDefault(); });
+editor.addEventListener('drop', function(e){
+  e.preventDefault();
+  var f=e.dataTransfer.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){ loadText(r.result,f.name); };
+  r.readAsText(f,'utf-8');
+});
+$('btnClear').addEventListener('click', function(){
+  if(editor.value && !confirm('清空当前内容？')) return;
+  editor.value=''; render(); saveDraft();
+});
+$('btnCopy').addEventListener('click', copyRich);
+$('btnCheck').addEventListener('click', runCheck);
+/* 排版参数切换：重建样式表后重渲染（S 由各 renderer 规则运行时读取） */
+function setSeg(seg,btn){
+  seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+  btn.classList.add('on');
+}
+function applyOpts(){ C=THEMES[OPT.theme].C; S=buildS(); saveOpts(); render(); }
+/* 排版参数持久化：下次打开保持上次的字体/字号选择 */
+var OPT_KEY='中登排版台.opt.v1';
+function saveOpts(){ try{ localStorage.setItem(OPT_KEY, JSON.stringify(OPT)); }catch(e){} }
+function loadOpts(){
+  try{
+    var s=localStorage.getItem(OPT_KEY); if(!s) return;
+    var o=JSON.parse(s);
+    if(o && typeof o.zoom==='number' && o.zoom>0.5 && o.zoom<2) OPT.zoom=o.zoom;
+    if(o && [0,14,22].indexOf(o.pad)>=0) OPT.pad=o.pad;
+    if(o && (o.dark===0||o.dark===1)) OPT.dark=o.dark;
+    if(o && (o.syncScroll===0||o.syncScroll===1)) OPT.syncScroll=o.syncScroll;
+    if(o && THEMES[o.theme]) OPT.theme=o.theme;
+  }catch(e){}
+}
+function syncOptUI(){
+  var ts=$('themeSel');
+  if(ts.value!==OPT.theme) ts.value=OPT.theme;
+  document.querySelectorAll('#sizeSeg button').forEach(function(b){
+    var z=b.getAttribute('data-size');
+    b.classList.toggle('on', (z==='s'&&Math.abs(OPT.zoom-0.94)<1e-6)
+                           ||(z==='m'&&Math.abs(OPT.zoom-1)<1e-6)
+                           ||(z==='l'&&Math.abs(OPT.zoom-1.06)<1e-6));
+  });
+  document.querySelectorAll('#padSeg button').forEach(function(b){
+    b.classList.toggle('on', parseInt(b.getAttribute('data-pad'),10)===OPT.pad);
+  });
+  document.querySelectorAll('#darkSeg button').forEach(function(b){
+    b.classList.toggle('on', parseInt(b.getAttribute('data-dark'),10)===OPT.dark);
+  });
+  document.querySelectorAll('#syncSeg button').forEach(function(b){
+    b.classList.toggle('on', parseInt(b.getAttribute('data-sync'),10)===(OPT.syncScroll?1:0));
+  });
+  $('previewWrap').classList.toggle('dark', OPT.dark===1);
+}
+/* 主题切换：重指色板 → 重建样式表 → 重渲染（复制内容随主题整体带出） */
+$('themeSel').addEventListener('change', function(){
+  OPT.theme=this.value;
+  applyOpts();
+});
+$('sizeSeg').addEventListener('click', function(e){
+  var b=e.target; if(b.tagName!=='BUTTON') return;
+  setSeg(this,b);
+  var z=b.getAttribute('data-size');
+  OPT.zoom = (z==='s')?0.94 : (z==='l')?1.06 : 1;
+  applyOpts();
+});
+$('padSeg').addEventListener('click', function(e){
+  var b=e.target; if(b.tagName!=='BUTTON') return;
+  setSeg(this,b);
+  OPT.pad = parseInt(b.getAttribute('data-pad'),10);
+  applyOpts();
+});
+/* 深色模拟：纯预览层切换（CSS filter），不需要重渲染 */
+$('darkSeg').addEventListener('click', function(e){
+  var b=e.target; if(b.tagName!=='BUTTON') return;
+  setSeg(this,b);
+  OPT.dark = parseInt(b.getAttribute('data-dark'),10);
+  $('previewWrap').classList.toggle('dark', OPT.dark===1);
+  saveOpts();
+});
+/* 模块插入：不用记语法 */
+var SNIPPETS={
+  intro:'\n:::intro\neyebrow: 栏目名 · 第 __ 期\ntitle: 标题\nsubtitle: 一句话说明这篇写什么\nmeta: 2026.__.__ · 登叔\n:::\n',
+  quote:'\n:::quote\ntext: 这里放一句能收住全文的判断\nfrom: 出处（可删本行）\n:::\n',
+  steps:'\n:::steps[清单标题]\n先做什么 | 说明这一步具体怎么做\n再做什么 | 说明\n最后确认什么 | 说明\n:::\n',
+  point:'\n:::point\neyebrow: 本期观点\ntext: 一句话判断\nnote: 补充说明（可删本行）\n:::\n'
+};
+$('insertSel').addEventListener('change', function(e){
+  var k=e.target.value; if(!k) return;
+  editor.value = editor.value.slice(0,editor.selectionStart||editor.value.length) + SNIPPETS[k] +
+                 editor.value.slice(editor.selectionEnd||editor.value.length);
+  e.target.value='';
+  render(); saveDraft();
+  toast('已插入 '+k+' 模块，替换里面的提示文字即可');
+});
+/* 同步滚动开关 */
+$('syncSeg').addEventListener('click', function(e){
+  var b=e.target; if(b.tagName!=='BUTTON') return;
+  setSeg(this,b);
+  OPT.syncScroll = parseInt(b.getAttribute('data-sync'),10);
+  saveOpts();
+  toast(OPT.syncScroll ? '已开启同步滚动' : '已关闭同步滚动');
+});
+/* ===== 编辑器 ⇄ 预览 同步滚动（百分比映射，doocs 思路） =====
+   textarea 按行等高，预览块高低不一，逐行像素对位不可行；
+   百分比映射保证两侧「相对位置」一致：滚到 50% 时两边中部内容正好对照。
+   回声抑制：A 侧滚动会程序化设置 B 侧 scrollTop，B 的 scroll 事件又会被
+   误当作用户滚动反向设置 A——用 scrollLock 记录滚动源，120ms 内另一侧的
+   连锁滚动不回传（连续滚动会不断续期，松手后才解锁）。 */
+var scrollLock=null, lockTimer=0;
+function setScrollLock(side){
+  scrollLock=side;
+  clearTimeout(lockTimer);
+  lockTimer=setTimeout(function(){ scrollLock=null; },120);
+}
+function scrollRatio(el){
+  var max=el.scrollHeight-el.clientHeight;
+  return max>0 ? el.scrollTop/max : 0;
+}
+function applyScrollRatio(el,r){
+  var max=el.scrollHeight-el.clientHeight;
+  if(max>0) el.scrollTop=r*max;
+}
+$('editor').addEventListener('scroll', function(){
+  if(!OPT.syncScroll || scrollLock==='preview') return;
+  setScrollLock('editor');
+  applyScrollRatio($('previewStage'), scrollRatio(editor));
+}, {passive:true});
+$('previewStage').addEventListener('scroll', function(){
+  if(!OPT.syncScroll || scrollLock==='editor') return;
+  setScrollLock('preview');
+  applyScrollRatio(editor, scrollRatio($('previewStage')));
+}, {passive:true});
+
+/* 视图切换 */
+$('viewSeg').addEventListener('click', function(e){
+  var b=e.target; if(b.tagName!=='BUTTON') return;
+  $('viewSeg').querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+  b.classList.add('on');
+  var v=b.getAttribute('data-view');
+  var w=$('previewWrap');
+  w.classList.toggle('mobile', v==='mobile');
+  w.classList.toggle('safe', v==='safe');
+});
+
+/* ===== 草稿存取 ===== */
+function saveDraft(){
+  try{ localStorage.setItem(SAVE_KEY, editor.value); saveStatus.textContent='已自动保存'; }catch(e){}
+}
+function loadDraft(){
+  try{ var s=localStorage.getItem(SAVE_KEY); if(s){ editor.value=s; } }catch(e){}
+}
+
+/* ===== toast ===== */
+var toastTimer=null;
+function toast(msg){
+  toastEl.textContent=msg; toastEl.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){toastEl.classList.remove('show');},2200);
+}
+
+/* ===== 初始化 ===== */
+/* 主题下拉：选项来自 THEMES 注册表（第三方主题加进 THEMES 即自动出现） */
+(function(){
+  var ts=$('themeSel'), frag=document.createDocumentFragment();
+  Object.keys(THEMES).forEach(function(k){
+    var o=document.createElement('option'); o.value=k; o.textContent=THEMES[k].name; frag.appendChild(o);
+  });
+  ts.appendChild(frag);
+})();
+loadOpts(); syncOptUI(); C=THEMES[OPT.theme].C; S=buildS();   /* 恢复上次的主题/字号选择 */
+loadDraft();
+render();
+bindToggle();
+/* 默认示例（首次打开无草稿时） */
+if(!editor.value){
+  editor.value=[
+    ':::intro',
+    'eyebrow: 中登行走中 · 第 07 期',
+    'title: AI 味是什么',
+    'subtitle: 先看看里面有没有人，再谈要不要去那股味。',
+    'meta: 2026.09.15 · 登叔',
+    ':::',
+    '',
+    '标题之后的第一段会自动略作强调（导语）。正文默认 16px / 行高 28.8px / 字距 0.3px。**加粗是棕橙**，*斜体是灰*，`行内代码` 是暖底。',
+    '',
+    '> [!NOTE]',
+    '> GFM 提示块的 emoji 已换成中文标签徽章——彩色 emoji 会破坏栏目配色。',
+    '',
+    ':::quote',
+    'text: 别急着“去 AI 味”，先看看里面有没有人。',
+    'from: 中登行走中 · 第 07 期',
+    ':::',
+    '',
+    '## 一、字号与层级',
+    '',
+    '标题分四档，字号阶梯拉开。工具栏可整体切换字号档位——切换后这里立即更新。',
+    '',
+    ':::steps[三步判断一段文字里有没有人]',
+    '找一个具体的细节 | 看他写的是“那天天气很好”还是“风把纸吹跑了”',
+    '试着把它换掉 | 换成任何人写都成立的句子，通常是没有人味的',
+    '看有没有代价 | 有具体代价的判断，才是一个人站在那里说话',
+    ':::',
+    '',
+    '## 二、列表与表格',
+    '',
+    '- **加粗起头**：列表第一句承担判断',
+    '- 第二项：说明性文字跟在后面',
+    '',
+    '| 元素 | 处理方式 |',
+    '| --- | --- |',
+    '| 图片题注 | 图片后紧跟的 *斜体段落* 自动变居中灰字 |',
+    '| 表格 | 表头棕橙白字，隔行浅底 |',
+    '',
+    '---',
+    '',
+    '> [!IMPORTANT]',
+    '> 最重要的判断留在最后：用橙色左侧条加“重点”徽章收住。',
+    ''
+  ].join('\n');
+  render();
+}
+
+/* 调试钩子：给 probe.py 等外部验证脚本调用，不影响正常使用 */
+window.__tool={ copyHTML:cleanCopyHTML, runCheck:runCheck, render:render };
+})();
+</script>
+</body>
+</html>

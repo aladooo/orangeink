@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>orangeink · 石墨 × 鎏金 · 主题设计规范</title>
+<style>
+  body{margin:0;background:#f2efe9;font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:#26221c}
+  header{padding:36px 40px 24px;max-width:1080px;margin:0 auto}
+  header h1{font-size:26px;margin:0 0 8px}
+  header p{color:#6b6154;font-size:14px;line-height:1.8;margin:0;max-width:780px}
+  .deck{max-width:1080px;margin:0 auto;padding:0 40px 60px}
+  .plan{background:#fff;border:1px solid #e2dcd0;border-radius:12px;margin:28px 0;overflow:hidden}
+  .plan-head{display:flex;justify-content:space-between;align-items:baseline;padding:20px 28px 14px;border-bottom:1px solid #efe9de;flex-wrap:wrap;gap:8px}
+  .plan-head h2{font-size:20px;margin:0}
+  .plan-head .tag{font-size:12px;color:#8a8375;letter-spacing:1px}
+  .plan-body{display:flex;gap:28px;padding:24px 28px;flex-wrap:wrap}
+  .palette{flex:0 0 300px}
+  .palette h3{font-size:13px;letter-spacing:2px;color:#8a8375;margin:0 0 12px}
+  .sw{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12.5px}
+  .sw i{width:34px;height:22px;border-radius:4px;border:1px solid rgba(0,0,0,.12);flex:0 0 34px}
+  .sw b{font-weight:600}
+  .sw span{color:#8a8375}
+  .note{margin-top:14px;font-size:12.5px;line-height:1.8;color:#6b6154;background:#faf7f0;border-left:3px solid #d8cfbc;padding:10px 12px;border-radius:0 6px 6px 0}
+  .phone{flex:0 0 375px;background:#fafafa;border:1px solid #e2dcd0;border-radius:14px;padding:18px 14px;box-sizing:border-box}
+  .usage{flex:1;min-width:230px;font-size:13px;line-height:2;color:#4a443a}
+  .usage h3{font-size:13px;letter-spacing:2px;color:#8a8375;margin:0 0 10px}
+  .usage li{margin-bottom:4px}
+  footer{max-width:1080px;margin:0 auto;padding:0 40px 50px;color:#8a8375;font-size:12.5px;line-height:1.9}
+</style>
+</head>
+<body>
+<header><h1>石墨 × 鎏金 · 主题设计规范</h1>
+<p>orangeink 四主题之一（L2 新增，同构换色）。设计方法与色板说明见仓库 docs/theming.md；完整四案对比见总览页。对比度均为 WCAG 预计算值，落地以自检器全绿为准。</p></header>
+<div class="deck">
+<!-- ============ 方案 D ============ -->
+<div class="plan">
+  <div class="plan-head"><h2>方案 D · 石墨 × 鎏金 <span class="tag">GRAPHITE × GOLD</span></h2><span class="tag">气质：商业评论 / 年度总结 / 强品牌感</span></div>
+  <div class="plan-body">
+    <div class="palette">
+      <h3>色板（关键项对比度 vs 所在底）</h3>
+      <div class="sw"><i style="background:#26242a"></i><b>正文 #26242a</b><span>石墨炭（微紫调）13.8:1</span></div>
+      <div class="sw"><i style="background:#201d26"></i><b>标题/表头 #201d26</b><span>近黑 16:1</span></div>
+      <div class="sw"><i style="background:#d9a514"></i><b>accent 鎏金 #d9a514</b><span><b>只做条/点</b>，金在白底永远不做文字色</span></div>
+      <div class="sw"><i style="background:#8a5f0e"></i><b>加粗/链接 深琥珀 #8a5f0e</b><span>5.6:1</span></div>
+      <div class="sw"><i style="background:#4a3f63"></i><b>H3/引文 #4a3f63</b><span>暗紫 8.6:1</span></div>
+      <div class="sw"><i style="background:#f6f2e8"></i><b>模块底 #f6f2e8</b><span>香槟纸</span></div>
+      <div class="sw"><i style="background:#6d675c"></i><b>题注 #6d675c</b><span>5.2:1</span></div>
+      <div class="sw"><i style="background:#7a6a50"></i><b>落款 #7a6a50</b><span>5.0:1</span></div>
+      <div class="note">最「杂志封面」的一版：金条分割线 + 金点列表 + 近黑标题，金只出现在装饰层——正是中登验证过的「hazard-accent」逻辑推到极致。徽章用深琥珀底白字（5.6:1）。</div>
+    </div>
+    <div class="phone">
+      <section style="margin:0 0 22px;padding:16px;background:#f6f2e8;border-top:3px solid #d9a514;border-radius:0 4px 4px 4px">
+        <section style="margin:0 0 8px;font-size:12.5px;color:#201d26;letter-spacing:2px;font-weight:700">商业观察 · 第 08 期</section>
+        <section style="margin:0 0 8px;font-size:21px;font-weight:700;color:#201d26;line-height:1.5">自己造了个工具，然后把它开源了</section>
+        <section style="margin:0;font-size:14.5px;color:#6d675c;line-height:1.8">从排版踩坑到合规自检，一个单文件工具的诞生</section>
+      </section>
+      <section style="margin:0 0 14px;font-size:16px;line-height:1.85;color:#26242a">市面上的工具都把排版交给运气，我们要做的是<b style="color:#8a5f0e">把合规内置进渲染管线</b>——粘贴进公众号之前，弹窗就已经被预演过了。参考 <a style="color:#8a5f0e;text-decoration:none;border-bottom:1px solid rgba(138,95,14,.4)">doocs/md</a> 的思路，但走得更远。</section>
+      <section style="margin:0 0 14px;padding:10px 14px;background:#f6f2e8;border-left:4px solid #d9a514;border-radius:0 6px 6px 0;font-size:15px;line-height:1.85;color:#4a3f63">工具的价值不在生成，而在<b>发布前的确定性</b>。<br>——这行是引用块的第二行，按行分行。</section>
+      <section style="margin:0 0 14px;padding:12px 14px;background:#f3ecdb;border-left:4px solid #d9a514;border-radius:0 6px 6px 0;font-size:14px;line-height:1.8;color:#26242a"><span style="padding:1px 7px;background:#8a5f0e;color:#fff;border-radius:3px;font-size:12px;font-weight:700;letter-spacing:1px">说明</span> 这是深琥珀底白字徽章的提示模块。</section>
+      <section style="text-align:center;margin:22px 0"><span style="display:inline-block;width:36px;height:4px;border-radius:2px;background:#d9a514;font-size:4px;line-height:4px;overflow:hidden;vertical-align:middle">&nbsp;</span></section>
+      <section style="margin:0;padding:16px;background:#f6f2e8;border-left:4px solid #d9a514;border-radius:0 6px 6px 0">
+        <section style="margin:0 0 6px;font-size:26px;color:#8a5f0e;font-weight:700">&#8220;</section>
+        <section style="margin:0;font-size:17px;line-height:1.8;color:#201d26;font-weight:700">排版应该是确定性的，AI 负责写内容。</section>
+        <section style="margin:10px 0 0;font-size:12.5px;color:#7a6a50;text-align:right">&#8212; 登叔</section>
+      </section>
+    </div>
+    <div class="usage">
+      <h3>适用与取舍</h3>
+      <li>金色装饰辨识度最高，「金条分割线」自带品牌记忆点；</li>
+      <li>适合：商业评论、复盘、年度总结等强观点内容；</li>
+      <li>取舍：金色在低端屏偏暗环境下对比下降最明显（装饰无碍，但需要真机验证）；暗紫引文是三案中最大胆的辅助色；</li>
+      <li>迁移成本：同 B/C，1:1 换色板。</li>
+    </div>
+  </div>
+</div>
+</div>
+<footer>orangeink · 公众号 Markdown 排版台 · github.com/aladooo/orangeink</footer>
+</body>
+</html>
