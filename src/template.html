@@ -4,6 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>橙墨 · 公众号 Markdown 排版台</title>
+<meta name="description" content="橙墨 orangeink · oimd — 单文件离线公众号 Markdown 排版台，本地运行、一键复制合规公众号样式。">
+<meta name="author" content="AladoooWu（橙墨 orangeink · oimd）">
+<meta name="license" content="MIT">
+<meta name="generator" content="橙墨 orangeink oimd">
+<meta name="theme-color" content="#ff5a00">
+<!-- 权威源：始终指向最新版本，便于用户更新与溯源 -->
+<link rel="canonical" href="https://github.com/aladooo/orangeink">
+<!-- Open Graph：分享链接到微信/社交平台时显示信息卡 -->
+<meta property="og:title" content="橙墨 · 公众号 Markdown 排版台">
+<meta property="og:description" content="单文件、离线、零依赖的公众号 Markdown 排版工具，一键复制合规样式。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://github.com/aladooo/orangeink">
+<meta property="og:image" content="https://raw.githubusercontent.com/aladooo/orangeink/main/example/demo-preview-1.jpg">
 <style>
 /* ===== 工具自身界面样式（不进公众号） ===== */
 :root{
@@ -85,6 +98,16 @@ html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
   color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s;
   pointer-events:none;z-index:99}
 #toast.show{opacity:1}
+/* 页脚：权利声明 + 更新溯源 */
+#siteFooter{display:flex;align-items:center;gap:10px;flex:0 0 auto;
+  padding:5px 14px;background:#fff;border-top:1px solid var(--ui-border);
+  font-size:12px;color:var(--gray)}
+#siteFooter .f-brand{font-weight:700;color:var(--blue)}
+#siteFooter .f-ver{background:var(--ui-border);color:var(--blue);border-radius:8px;
+  padding:0 7px;font-size:11px}
+#siteFooter .f-lic{color:var(--brown)}
+#siteFooter a{color:var(--brand);text-decoration:none;font-weight:600}
+#siteFooter a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -146,6 +169,13 @@ html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
     </div>
   </div>
   <div id="checkPanel"><span id="toggleCheck">收起 ▾</span><div class="cnt">自检面板：粘贴内容后点「自检」</div></div>
+  <footer id="siteFooter">
+    <span class="f-brand">橙墨 orangeink · oimd</span>
+    <span class="f-ver">v1.0.0</span>
+    <span class="f-lic">MIT 开源</span>
+    <span class="sp"></span>
+    <a href="https://github.com/aladooo/orangeink" target="_blank" rel="noopener">⭐ GitHub 源码与更新</a>
+  </footer>
 </div>
 <div id="toast"></div>
 
