@@ -893,6 +893,27 @@ function runCheck(){
       }
     }
   });
+  /* 加粗/斜体未生效（2026-09 新增）：解析后正文里残留裸星号，多半是 CommonMark 分隔符
+     「左右翼」规则——中文紧贴标点（引号 / 书名号 / 「」 / 句号）时 ** 开/收失败。
+     中文写作高发坑，故单列提示；代码块（code/pre）内的星号属合法，跳过。 */
+  (function(){
+    var EMPH=/(?:\*\*|\*){1,3}/g;
+    var walker=document.createTreeWalker(preview, NodeFilter.SHOW_TEXT, null);
+    var node, seen;
+    while((node=walker.nextNode())){
+      var par=node.parentNode; if(!par) continue;
+      if(par.closest && par.closest('code,pre')) continue;
+      var txt=node.nodeValue||'';
+      EMPH.lastIndex=0; var m; seen={};
+      while((m=EMPH.exec(txt))!==null){
+        if(seen[m[0]]) continue; seen[m[0]]=1;
+        var ctx=txt.slice(Math.max(0,m.index-28), m.index+m[0].length+28).replace(/\s+/g,' ');
+        issues.push({rule:'加粗/斜体未生效',el:par,sev:'warn',
+          desc:'正文里残留裸星号「'+m[0]+'」：「…'+ctx+'…」。多半是 ** 紧贴中文标点（引号/书名号/「」/句号）导致开/收失败。'+
+               '改法：把标点移到标记外，或在 ** 前加空格，或整句独立成行'});
+      }
+    }
+  })();
   renderIssues(issues);
 }
 function renderIssues(issues){
