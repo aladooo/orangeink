@@ -2,6 +2,20 @@
 
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [1.0.1] - 2026-09-19
+
+### Added
+
+- **自检器新增「加粗/斜体未生效」检测**：CommonMark 分隔符「左右翼」规则下，`**` 紧贴中文标点（引号 / 书名号 / 「」 / 句号）会开/收失败，正文残留裸星号——自检面板直接报出位置与改法；`code` / `pre` 代码块内星号不误报
+- **页面页脚**：品牌名 + 版本号 + MIT 开源声明 + GitHub 更新入口——单文件被转发后，用户仍可溯源到最新版
+- **`<head>` 元信息**：author（AladoooWu）/ license（MIT）/ canonical / Open Graph（og:image 指向仓库实拍图），单文件被转发分享时保留署名与协议、社交平台显示信息卡
+
+### Changed
+
+- 默认示例改为「中登行走中 · 第 08 期 · 现成的排版工具一堆，我为什么还要自己造」（保留全部语法演示模块）
+
+[1.0.1]: https://github.com/aladooo/orangeink/releases/tag/v1.0.1
+
 ## [1.0.0] - 2026-09-16
 
 首个开源版本。以下能力均在 2026-09-15/16 的内部开发期完成，并经真实公众号发布流程反复实测回灌（详见各 docs 文档与 `docs/wechat-compat.md` 的踩坑手册）。

@@ -88,7 +88,7 @@ note: 补充说明（可删本行）
 | 松烟 × 陶土 | 慢内容、互补暖点缀 | 随笔 / 生活类 |
 | 石墨 × 鎏金 | 商业感、强品牌记忆点 | 商业评论 / 年度复盘 |
 
-工具栏「主题」下拉一键切换，选择自动记住。每套主题的完整色板、对比度数据与设计稿见 [docs/design/](docs/design/themes-overview.md)。
+工具栏「主题」下拉一键切换，选择自动记住。每套主题的完整色板、键位含义与设计方法见 [docs/theming.md](docs/theming.md)。
 
 ## 🩺 Self-Check
 
@@ -97,6 +97,7 @@ note: 补充说明（可删本行）
 - **行高叠字检测**（官方 `verify-article-structure-spec` 的前端实现，official / real 双口径）
 - **font-family 白名单**（官方仅允许 `mp-quote, PingFang SC, system-ui, -apple-system` 链）
 - **WCAG AA 对比度**（文字 vs 所在背景 ≥4.5:1）
+- **加粗/斜体未生效**（`**` 紧贴中文标点开/收失败时正文残留裸星号，报警并给改法；v1.0.1 新增）
 - 空标签（会被微信剥离）、无单位行高、复制污染等历史坑位检查
 
 规则依据与实现细节：[docs/self-check.md](docs/self-check.md) · 独立校验脚本：[aladooo/wechat-article-checker](https://github.com/aladooo/wechat-article-checker)
