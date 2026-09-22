@@ -15,6 +15,9 @@
 
 它与其他 Markdown→微信工具最大的不同，是把**公众号平台的结构合规检查做成了内置自检器**——粘贴进公众号之前，「行高叠字」「font-family 违规」「对比度不足」这类会弹「结构异常」警告的问题，就已经在编辑器里被预演和拦截过了。
 
+<p align="center"><img src="example/orangeink-html-preview.png" alt="橙墨界面：左侧 Markdown 编辑，右侧公众号实时预览，底部自检面板" width="860"></p>
+<p align="center"><sub>界面总览：左侧写 Markdown，右侧实时预览公众号真实观感（手机 375 档）；底部自检面板显示「全部通过」即可一键复制发布</sub></p>
+
 <p align="center"><img src="example/demo-preview-1.jpg" width="260">&nbsp;<img src="example/demo-preview-2.jpg" width="260">&nbsp;<img src="example/demo-preview-3.jpg" width="260"></p>
 <p align="center"><sub>公众号发布后的真机实拍（非渲染截图）：首屏 intro 模块 / 引用块分行与加粗 / 分割线与文末参考块</sub></p>
 
