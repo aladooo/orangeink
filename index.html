@@ -712,8 +712,36 @@ function wrapTextRuns(root){
     }
   }
 }
+/* 列表项内容包 <section>（2026-09-27 新增）：
+   根因（公众号草稿实测）：微信粘贴解析会把 li 顶层的行内兄弟节点拆开重组——
+   <li><strong>人</strong><span leaf>：文字…</span></li> 会被它改写成
+   <li><strong>人</strong><section><span leaf>：文字…</span></section></li>，
+   section 是块级元素 → 「加粗列表名后面的文字」被强制换行（段落不受影响，
+   因为 section/p 内部的行内节点不会被拆）。
+   修法：渲染时我们自己先把「纯行内内容的 li」整包进一个 section（携带正文色，
+   对齐官方 li>section 结构），微信再没有拆分的空间。
+   已含块级子元素（松散列表的 p / 嵌套列表等）的 li 不动；纯文本 li 交给 wrapTextRuns。
+   在草稿里实测：重构后 li 由 4 行变 1 行（28.8px），内联恢复。 */
+var LI_BLOCK={P:1,DIV:1,SECTION:1,UL:1,OL:1,TABLE:1,PRE:1,BLOCKQUOTE:1,
+              H1:1,H2:1,H3:1,H4:1,H5:1,H6:1,IMG:1,HR:1};
+function wrapLiSections(root){
+  root.querySelectorAll('li').forEach(function(li){
+    var hasBlock=false;
+    for(var k=0;k<li.children.length;k++){
+      if(LI_BLOCK[li.children[k].tagName]){ hasBlock=true; break; }
+    }
+    if(hasBlock || !li.children.length) return;
+    var d=0,n=li;
+    while(n&&n!==root){ if(n.tagName==='UL'||n.tagName==='OL') d++; n=n.parentElement; }
+    var sec=document.createElement('section');
+    sec.setAttribute('style','margin:0;color:'+(d>1?C.TXTQ:C.TEXT));
+    while(li.firstChild) sec.appendChild(li.firstChild);
+    li.appendChild(sec);
+  });
+}
 /* 表格斑马纹：nth-child 在公众号不可用，改为直接写内联背景 */
 function polish(){
+  wrapLiSections(preview);                          /* li 内容先包 section（须在 wrapTextRuns 之前） */
   preview.querySelectorAll('table').forEach(function(tb){
     Array.prototype.forEach.call(tb.querySelectorAll('tr'), function(tr,i){
       if(tr.querySelector('th')) return;
