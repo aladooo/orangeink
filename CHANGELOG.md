@@ -2,7 +2,18 @@
 
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
-## [1.0.1] - 2026-09-19
+## [Unreleased]
+
+### Added
+
+- **版本检查与升级提示**：加载 3s 后静默请求官网 `orangeink/version.json`——官方地址 base64 混淆存储、检查时解码，跳转目标再做**域白名单硬校验**（JSON 给的 URL 不以官方域开头就丢弃）；有新版本时页脚版本号旁出现亮橙「⬆ 新版本」徽标，悬停显示新版变化，点击新标签直达官网下载页。离线（`navigator.onLine=false`）、请求超时/失败、版本号格式非法一律静默，不影响离线使用
+
+### Fixed
+
+- **列表项加粗开头 → 后续文字强制换行**：微信粘贴解析会把 `<li>` 顶层行内兄弟节点拆开重组（`<li><strong>标签</strong><span>：文字</span></li>` → 加粗留顶层、余下被拆进块级 `<section>` 强制换行；第 19 期发布实测一条 6 项列表中招 4 项）——`polish()` 在 `wrapTextRuns` 之前先跑 `wrapLiSections()`，把纯行内内容的 li 整包进单个 `<section>`，对齐官方 `li > section` 结构（`docs/wechat-compat.md` 坑 10）
+
+[Unreleased]: https://github.com/aladooo/orangeink/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/aladooo/orangeink/releases/tag/v1.0.1
 
 ### Added
 
@@ -13,8 +24,6 @@
 ### Changed
 
 - 默认示例改为「中登行走中 · 第 08 期 · 现成的排版工具一堆，我为什么还要自己造」（保留全部语法演示模块）
-
-[1.0.1]: https://github.com/aladooo/orangeink/releases/tag/v1.0.1
 
 ## [1.0.0] - 2026-09-16
 

@@ -108,6 +108,9 @@ html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
 #siteFooter .f-lic{color:var(--brown)}
 #siteFooter a{color:var(--brand);text-decoration:none;font-weight:600}
 #siteFooter a:hover{text-decoration:underline}
+#siteFooter .f-upd{background:var(--brand);color:#fff;border-radius:9px;
+  padding:1px 8px;font-size:11px;font-weight:700;text-decoration:none}
+#siteFooter .f-upd:hover{text-decoration:none;filter:brightness(1.08)}
 </style>
 </head>
 <body>
@@ -172,6 +175,7 @@ html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
   <footer id="siteFooter">
     <span class="f-brand">橙墨 orangeink · oimd</span>
     <span class="f-ver">v1.0.1</span>
+    <span id="fUpdate" style="display:none"></span>
     <span class="f-lic">MIT 开源</span>
     <span class="sp"></span>
     <a href="https://github.com/aladooo/orangeink" target="_blank" rel="noopener">⭐ GitHub 源码与更新</a>
@@ -1314,6 +1318,56 @@ if(!editor.value){
 
 /* 调试钩子：给 probe.py 等外部验证脚本调用，不影响正常使用 */
 window.__tool={ copyHTML:cleanCopyHTML, runCheck:runCheck, render:render };
+
+/* ===== 版本检查（官网 version.json）===== */
+/* 官网地址 base64 混淆存储，检查时解码拼回（防低水平篡改/扫描替换）；
+   跳转目标再做域白名单硬校验，JSON 给的 URL 不以官方域开头就丢弃，只用其版本号。
+   离线（navigator.onLine=false）、请求失败、格式非法一律静默，不影响使用。 */
+var _OH="aHR0cHM6Ly93d3cuYWxhZG9vby5jb20=";      /* https://www.aladooo.com */
+var _OJ="L29yYW5nZWluay92ZXJzaW9uLmpzb24=";      /* /orangeink/version.json */
+var VER_PAT=/^\d+\.\d+\.\d+$/;
+function _b64(b){try{return atob(b)}catch(e){return""}}
+function cmpVer(a,b){
+  var pa=String(a).replace(/^v/,"").split("."),pb=String(b).replace(/^v/,"").split(".");
+  for(var i=0;i<3;i++){var x=+pa[i]||0,y=+pb[i]||0;if(x>y)return 1;if(x<y)return -1}
+  return 0;
+}
+function curVer(){
+  var el=document.querySelector("#siteFooter .f-ver");
+  return (el?el.textContent.trim():"").replace(/^v/,"");
+}
+function checkUpdate(){
+  if(!navigator.onLine)return;                       /* 非联网环境禁止检查 */
+  var home=_b64(_OH),url=home+_b64(_OJ);
+  if(!VER_PAT.test(curVer()))return;                 /* 本地版本号异常则不比 */
+  if(url.slice(0,home.length+1)!==home+"/")return;   /* 双保险：解码结果必须是官方域下路径 */
+  try{
+    var ac=("AbortController"in window)?new AbortController():null;
+    if(ac)setTimeout(function(){ac.abort()},5000);   /* 5s 超时，防吊死 */
+    fetch(url+(/\?/.test(url)?"&":"?")+"t="+Date.now(),{cache:"no-store",signal:ac?ac.signal:undefined})
+      .then(function(r){if(!r.ok)throw 0;return r.json()})
+      .then(function(j){
+        if(!j||typeof j.version!=="string")return;
+        var v=j.version.replace(/^v/,"");
+        if(!VER_PAT.test(v))return;                  /* 远端版本号非法不处理 */
+        if(cmpVer(v,curVer())>0)showUpdate(home,j);
+      }).catch(function(){});
+  }catch(e){}
+}
+function showUpdate(home,j){
+  var box=document.getElementById("fUpdate");if(!box)return;
+  var dl=home+"/orangeink.html";                     /* 默认：官网下载页 */
+  if(j.download&&typeof j.download==="string"&&j.download.indexOf(home+"/")===0)dl=j.download;
+  var a=document.createElement("a");
+  a.className="f-upd";a.href=dl;a.target="_blank";a.rel="noopener noreferrer";
+  a.textContent="⬆ 新版本 "+j.version;               /* textContent 注入，防 XSS */
+  var wn=[],i,src=j.whatsNew;
+  if(src&&"length"in src)for(i=0;i<src.length&&i<4;i++)if(typeof src[i]==="string")wn.push("· "+src[i]);
+  a.title="新版变化"+(j.released?"（"+j.released+"）":"")+"：\n"+(wn.join("\n")||"详见官网")+"\n点击前往官网下载";
+  box.appendChild(a);box.style.display="inline";
+}
+setTimeout(checkUpdate,3000);                        /* 加载 3s 后静默检查一次 */
+window.__tool.checkUpdate=checkUpdate;
 })();
 </script>
 </body>
