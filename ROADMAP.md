@@ -18,6 +18,11 @@
 - 页脚（品牌 / 版本号 / MIT / GitHub 更新入口）与 `<head>` 元信息（author / license / canonical / Open Graph）
 - 默认示例改为「第 08 期」橙墨诞生记
 
+## ✅ 已实现（Unreleased，待发版）
+
+- 修复列表项加粗开头 → 后续文字被微信粘贴解析强制换行（`wrapLiSections`，对齐官方 `li > section` 结构；见 [docs/wechat-compat.md](docs/wechat-compat.md) 坑 10）
+- 版本检查与升级提示：联网时静默比对官网 `version.json`（官方地址混淆存储 + 跳转域白名单硬校验），有新版页脚亮橙徽标直达下载页；离线 / 失败一律静默
+
 ## 🧭 计划中 / 探索中
 
 | 方向 | 状态 | 说明 |
