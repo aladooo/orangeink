@@ -2,7 +2,7 @@
 
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
-## [Unreleased]
+## [1.1.0] - 2026-09-27
 
 ### Added
 
@@ -12,8 +12,10 @@
 
 - **列表项加粗开头 → 后续文字强制换行**：微信粘贴解析会把 `<li>` 顶层行内兄弟节点拆开重组（`<li><strong>标签</strong><span>：文字</span></li>` → 加粗留顶层、余下被拆进块级 `<section>` 强制换行；第 19 期发布实测一条 6 项列表中招 4 项）——`polish()` 在 `wrapTextRuns` 之前先跑 `wrapLiSections()`，把纯行内内容的 li 整包进单个 `<section>`，对齐官方 `li > section` 结构（`docs/wechat-compat.md` 坑 10）
 
-[Unreleased]: https://github.com/aladooo/orangeink/compare/v1.0.1...HEAD
+[1.1.0]: https://github.com/aladooo/orangeink/releases/tag/v1.1.0
 [1.0.1]: https://github.com/aladooo/orangeink/releases/tag/v1.0.1
+
+## [1.0.1] - 2026-09-19
 
 ### Added
 
