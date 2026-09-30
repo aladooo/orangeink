@@ -121,6 +121,20 @@ tools/              独立检测器说明（见 wechat-article-checker 仓库）
 
 见 [ROADMAP.md](ROADMAP.md)。已实现清单、计划中的方向（二批模块、图片能力、HTML 导入等），以及「欢迎 issue 提需求」的征集注脚。
 
+## 🤖 Agent Skill（oimd）
+
+本仓自带 headless 渲染 skill：[`skill/`](skill/) —— 把任意 agent（WorkBuddy / OpenClaw / Claude Skills 兼容平台 / Codex 手动跑 CLI）接上，即可：
+
+- 按橙墨写作规范产出 Markdown 文稿（`skill/references/writing-guide.md`）
+- 一键渲染为**可直接发布公众号**的内容：纯净合规 HTML（API 用）/ 一键复制页 / 草稿箱 API 请求体 JSON，输出带静态合规自检
+- `skill/scripts/parity-check.mjs` 在 jsdom 里执行浏览器版原脚本与 CLI 输出逐字节对拍——**同仓同版本，模板改了立刻能验**
+
+安装：clone 本仓后在 `skill/` 下 `npm install jsdom`（唯一依赖）。
+
+```bash
+node skill/scripts/render.mjs 文章.md -o 片段.html --copy-page 复制页.html --draft 草稿.json
+```
+
 ## 🙏 Acknowledgments
 
 - [doocs/md](https://github.com/doocs/md) — 同类工具的先行者，多处理念致敬

@@ -1,0 +1,3 @@
+# skill 依赖不入库（jsdom 约 26MB，SkillHub/Skills 规范限 100 文件/10MB）
+node_modules/
+package-lock.json
