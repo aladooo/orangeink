@@ -2,6 +2,18 @@
 
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [1.2.0] - 2026-09-30
+
+### Added
+
+- **内置 Agent Skill（oimd）**：`skill/` 子目录（monorepo 式，随主仓同版本演进）——把任意 agent（WorkBuddy / OpenClaw / Claude Skills 兼容平台）接上即可把 Markdown 一键转成可直接发布微信公众号的三件套：纯净合规 HTML（API 用）/ 一键复制页（自带二次微调栏：主题 / 字号 / 边距 / 深色 / 手机预览）/ 公众号草稿箱 API 请求体 JSON，输出自带静态合规自检
+- **headless 渲染器** `skill/scripts/render.mjs`：主排版台管线的函数级移植（span leaf 包裹 / px 行高 / font-family 剔除 / li section 包裹全保留）
+- **对拍护栏** `skill/scripts/parity-check.mjs`：jsdom 执行浏览器版原脚本与 CLI 逐字节比对，默认对拍同仓 `index.html`——模板改动即改即验（验收：sample + 07~20 期 14 篇真文逐字节一致）
+- `references/`（写作规范 / 合规坑位表 / 草稿箱 API 对接）与 `tests/`（全语法测试稿 + 复制页微调栏 jsdom 测试 20 项）
+
+[1.2.0]: https://github.com/aladooo/orangeink/releases/tag/v1.2.0
+[1.1.0]: https://github.com/aladooo/orangeink/releases/tag/v1.1.0
+
 ## [1.1.0] - 2026-09-27
 
 ### Added
@@ -12,7 +24,6 @@
 
 - **列表项加粗开头 → 后续文字强制换行**：微信粘贴解析会把 `<li>` 顶层行内兄弟节点拆开重组（`<li><strong>标签</strong><span>：文字</span></li>` → 加粗留顶层、余下被拆进块级 `<section>` 强制换行；第 19 期发布实测一条 6 项列表中招 4 项）——`polish()` 在 `wrapTextRuns` 之前先跑 `wrapLiSections()`，把纯行内内容的 li 整包进单个 `<section>`，对齐官方 `li > section` 结构（`docs/wechat-compat.md` 坑 10）
 
-[1.1.0]: https://github.com/aladooo/orangeink/releases/tag/v1.1.0
 [1.0.1]: https://github.com/aladooo/orangeink/releases/tag/v1.0.1
 
 ## [1.0.1] - 2026-09-19
