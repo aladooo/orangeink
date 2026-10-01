@@ -20,7 +20,7 @@
 
 ## ✅ 已实现（v1.2.0）
 
-- **内置 Agent Skill（oimd）**：`skill/` 子目录 monorepo 化——headless 渲染器 `render.mjs`（管线函数级移植）+ 对拍护栏 `parity-check.mjs`（jsdom 执行浏览器版原脚本逐字节比对）+ 一键复制页二次微调栏 + 写作规范 / 合规坑位表 / 草稿箱 API references + jsdom 测试 20 项（详见 [README · Agent Skill](README.md#-agent-skilloimd)）
+- **内置 Agent Skill（oimd）**：`orangeink/` 子目录 monorepo 化——headless 渲染器 `render.mjs`（管线函数级移植）+ 对拍护栏 `parity-check.mjs`（jsdom 执行浏览器版原脚本逐字节比对）+ 一键复制页二次微调栏 + 写作规范 / 合规坑位表 / 草稿箱 API references + jsdom 测试 20 项（详见 [README · Agent Skill](README.md#-agent-skilloimd)）
 
 ## ✅ 已实现（v1.1.0）
 

@@ -123,16 +123,16 @@ tools/              独立检测器说明（见 wechat-article-checker 仓库）
 
 ## 🤖 Agent Skill（oimd）
 
-本仓自带 headless 渲染 skill：[`skill/`](skill/) —— 把任意 agent（WorkBuddy / OpenClaw / Claude Skills 兼容平台 / Codex 手动跑 CLI）接上，即可：
+本仓自带 headless 渲染 skill：[`orangeink/`](orangeink/) —— 把任意 agent（WorkBuddy / OpenClaw / Claude Skills 兼容平台 / Codex 手动跑 CLI）接上，即可：
 
-- 按橙墨写作规范产出 Markdown 文稿（`skill/references/writing-guide.md`）
+- 按橙墨写作规范产出 Markdown 文稿（`orangeink/references/writing-guide.md`）
 - 一键渲染为**可直接发布公众号**的内容：纯净合规 HTML（API 用）/ 一键复制页 / 草稿箱 API 请求体 JSON，输出带静态合规自检
-- `skill/scripts/parity-check.mjs` 在 jsdom 里执行浏览器版原脚本与 CLI 输出逐字节对拍——**同仓同版本，模板改了立刻能验**
+- `orangeink/scripts/parity-check.mjs` 在 jsdom 里执行浏览器版原脚本与 CLI 输出逐字节对拍——**同仓同版本，模板改了立刻能验**
 
-安装：clone 本仓后在 `skill/` 下 `npm install jsdom`（唯一依赖）。
+安装：clone 本仓后在 `orangeink/` 下 `npm install jsdom`（唯一依赖）。
 
 ```bash
-node skill/scripts/render.mjs 文章.md -o 片段.html --copy-page 复制页.html --draft 草稿.json
+node orangeink/scripts/render.mjs 文章.md -o 片段.html --copy-page 复制页.html --draft 草稿.json
 ```
 
 ## 🙏 Acknowledgments

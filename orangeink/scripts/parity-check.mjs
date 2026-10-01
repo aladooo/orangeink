@@ -10,7 +10,7 @@ import { renderOrangeink } from './render.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mdPath = path.resolve(process.argv[2] || path.join(__dirname, '..', 'tests', 'sample.md'));
-// 默认对拍同仓的浏览器版模板（skill/ 在 orangeink 仓内 = ../../index.html）；
+// 默认对拍同仓的浏览器版模板（orangeink/ 在 orangeink 仓内 = ../../index.html）；
 // 独立安装（用户级 skill 目录）时回退到本机 orangeink 检出路径
 const repoTemplate = path.join(__dirname, '..', '..', 'index.html');
 const fallbackTemplate = 'C:/Users/oday/WorkBuddy/自媒体-个人/中登行走中/orangeink/index.html';
