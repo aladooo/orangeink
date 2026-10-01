@@ -130,7 +130,13 @@ tools/              独立检测器说明（见 wechat-article-checker 仓库）
 - 一键渲染为**可直接发布公众号**的内容：纯净合规 HTML（API 用）/ 一键复制页 / 草稿箱 API 请求体 JSON，输出带静态合规自检
 - `orangeink/scripts/parity-check.mjs` 在 jsdom 里执行浏览器版原脚本与 CLI 输出逐字节对拍——**同仓同版本，模板改了立刻能验**
 
-安装：clone 本仓后在 `orangeink/` 下 `npm install jsdom`（唯一依赖）。
+**安装（skills CLI，支持 Claude Code / Codex / Amp / Cline 等 79 个 agent）：**
+
+```bash
+npx skills add https://github.com/aladooo/orangeink/tree/main/orangeink
+```
+
+**安装（手动 clone，其余平台）：** clone 本仓后在 `orangeink/` 下 `npm install jsdom`（唯一依赖）。
 
 ```bash
 node orangeink/scripts/render.mjs 文章.md -o 片段.html --copy-page 复制页.html --draft 草稿.json
