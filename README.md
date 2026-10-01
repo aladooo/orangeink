@@ -7,6 +7,7 @@
 <p align="center">
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License"></a>
 <a href="https://github.com/aladooo/orangeink/pulls"><img src="https://img.shields.io/badge/PRs-welcome-blue" alt="PRs welcome"></a>
+<a href="https://skills.sh/aladooo/orangeink"><img src="https://skills.sh/b/aladooo/orangeink" alt="skills.sh installs"></a>
 <img src="https://img.shields.io/badge/build-none-lightgrey" alt="no build needed">
 <img src="https://img.shields.io/badge/dependencies-0-brightgreen" alt="zero runtime deps">
 </p>
