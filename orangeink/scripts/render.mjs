@@ -141,6 +141,36 @@ function makeMd(ctx) {
   const { C, px, lh, S } = ctx;
   const md = markdownit({ html:true, breaks:false, linkify:true, typographer:false });
 
+  /* linkify 全角消毒（v1.2.1）：linkify-it 会把紧贴 URL 的全角标点连同后续汉字一起吸进自动链接
+     （如「…orangeink，装到用户级目录」→ href 里带 %EF%BC%8C…，点开即坏链）。
+     注意 token 层 href 已被百分号编码、链接文字是原文——解码后一致才认定自动链接；
+     截断 href 与链接文字，余文还原为普通文本。手写 []() 链接不受影响。 */
+  md.core.ruler.after('linkify', 'oimd_linkify_cjk', function(state){
+    state.tokens.forEach(tok => {
+      if (tok.type!=='inline' || !tok.children) return;
+      const ch = tok.children;
+      for (let i=0; i<ch.length; i++) {
+        if (ch[i].type!=='link_open') continue;
+        const href = ch[i].attrGet('href');
+        if (!href) continue;
+        const nxt = ch[i+1];
+        if (!nxt || nxt.type!=='text') continue;
+        let raw; try { raw = decodeURIComponent(href); } catch(e) { raw = href; }
+        if (raw !== nxt.content) continue;
+        const m = raw.search(/[^\x21-\x7e]/);
+        if (m<=0) continue;
+        ch[i].attrSet('href', raw.slice(0,m));
+        nxt.content = raw.slice(0,m);
+        const rest = new state.Token('text','',0);
+        rest.content = raw.slice(m);
+        for (let j=i+2; j<ch.length; j++) {
+          if (ch[j].type==='link_close' && ch[j].level===ch[i].level) { ch.splice(j+1,0,rest); break; }
+        }
+      }
+    });
+    return true;
+  });
+
   const ICONS_ZH = { NOTE:'说明', TIP:'提示', IMPORTANT:'重点', WARNING:'注意', CAUTION:'警告' };
   const escapeHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const mdInline = s => s ? md.renderInline(s) : '';
@@ -624,11 +654,41 @@ export function checkStatic(html) {
       desc:'同标签+同样式连续嵌套 '+n+' 层（>'+NEST_MAX+'），公众号会自动删节点' });
     for (let k=0; k<node.children.length; k++) walkNest(node.children[k]);
   })(doc.body);
+  /* v1.2.1 加粗/斜体未生效（裸星号残留）——移植自浏览器版：CommonMark 分隔符「左右翼」规则，
+     中文紧贴标点（引号/书名号/「」/句号）时 ** 开/收失败；code/pre 内星号属合法，跳过。 */
+  (function(){
+    const seenB = {};
+    all.forEach(el => {
+      if (el.closest && el.closest('code,pre')) return;
+      Array.prototype.forEach.call(el.childNodes, c => {
+        if (c.nodeType !== 3) return;
+        const t = c.textContent || '';
+        const EMPH = /(?:\*\*|\*){1,3}/g; let m;
+        while ((m = EMPH.exec(t)) !== null) {
+          const key = m[0] + '|' + t.slice(Math.max(0,m.index-20), m.index+m[0].length+20);
+          if (seenB[key]) continue; seenB[key] = 1;
+          const ctx = t.slice(Math.max(0,m.index-28), m.index+m[0].length+28).replace(/\s+/g,' ');
+          issues.push({ rule:'2.1 加粗/斜体未生效', sev:'warn', tag:el.tagName,
+            desc:'正文里残留裸星号「'+m[0]+'」：「…'+ctx+'…」。多半是 ** 紧贴中文标点（引号/书名号/「」/句号）导致开/收失败。'+
+                 '改法：把标点移到标记外，或在 ** 前加空格，或整句独立成行' });
+        }
+      });
+    });
+  })();
+  /* v1.2.1 行内代码含完整链接：微信编辑器会把代码里的 URL 自动转成可点链接，破坏代码样式；
+     且长代码不可断行，会引发公众号默认两端对齐的整行拉伸。 */
+  doc.body.querySelectorAll('code').forEach(el => {
+    if (el.closest && el.closest('pre')) return;
+    if (/https?:\/\//i.test(el.textContent||''))
+      issues.push({ rule:'2.2 代码内含链接', sev:'warn', tag:'code',
+        desc:'行内代码里有完整 URL——微信编辑器会把它自动转成可点链接，破坏代码样式；长代码不可断行，还会引发两端对齐拉伸。'+
+             '改法：命令放代码样式，URL 移到代码外（普通文本或手动链接）' });
+  });
   return issues;
 }
 
 /* ===== 一键复制页（浏览器端：一键复制 + 二次微调栏 + 品牌位） ===== */
-const VERSION = '1.2.0';
+const VERSION = '1.2.1';
 const COLOR_KEYS = ['ORANGE','DEEP','EMBER','STRONG','CHIP','LINK','BROWN','TAN','TEXT','TEXT2','TXTQ','WARMBG','WARMBG2','CODEBG','CODE','ZEBRA','LIST2','BORDER','PTEYE','PTNOTE'];
 const ALERT_ORDER = ['NOTE','TIP','IMPORTANT','WARNING','CAUTION'];
 function themeColorList(t){

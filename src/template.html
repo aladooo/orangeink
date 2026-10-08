@@ -174,7 +174,7 @@ html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
   <div id="checkPanel"><span id="toggleCheck">收起 ▾</span><div class="cnt">自检面板：粘贴内容后点「自检」</div></div>
   <footer id="siteFooter">
     <span class="f-brand">橙墨 orangeink · oimd</span>
-    <span class="f-ver">v1.2.0</span>
+    <span class="f-ver">v1.2.1</span>
     <span id="fUpdate" style="display:none"></span>
     <span class="f-lic">MIT 开源</span>
     <span class="sp"></span>
@@ -323,6 +323,36 @@ var S=buildS();
 
 /* ===== markdown-it 初始化 ===== */
 var md = window.markdownit({html:true,breaks:false,linkify:true,typographer:false});
+
+/* linkify 全角消毒（v1.2.1）：linkify-it 会把紧贴 URL 的全角标点连同后续汉字一起吸进自动链接
+   （如「…orangeink，装到用户级目录」→ href 里带 %EF%BC%8C…，点开即坏链）。
+   注意 token 层 href 已被百分号编码、链接文字是原文——解码后一致才认定自动链接；
+   截断 href 与链接文字，余文还原为普通文本。手写 []() 链接不受影响。 */
+md.core.ruler.after('linkify','oimd_linkify_cjk', function(state){
+  state.tokens.forEach(function(tok){
+    if(tok.type!=='inline'||!tok.children) return;
+    var ch=tok.children, i, j;
+    for(i=0;i<ch.length;i++){
+      if(ch[i].type!=='link_open') continue;
+      var href=ch[i].attrGet('href');
+      if(!href) continue;
+      var nxt=ch[i+1];
+      if(!nxt||nxt.type!=='text') continue;
+      var raw; try { raw=decodeURIComponent(href); } catch(e){ raw=href; }
+      if(raw!==nxt.content) continue;
+      var m=raw.search(/[^\x21-\x7e]/);
+      if(m<=0) continue;
+      ch[i].attrSet('href', raw.slice(0,m));
+      nxt.content=raw.slice(0,m);
+      var rest=new state.Token('text','',0);
+      rest.content=raw.slice(m);
+      for(j=i+2;j<ch.length;j++){
+        if(ch[j].type==='link_close'&&ch[j].level===ch[i].level){ ch.splice(j+1,0,rest); break; }
+      }
+    }
+  });
+  return true;
+});
 
 /* GFM 警告块识别：blockquote 首段 [!TYPE] */
 var alertParas=new WeakSet();
@@ -945,6 +975,19 @@ function runCheck(){
                '改法：把标点移到标记外，或在 ** 前加空格，或整句独立成行'});
       }
     }
+  })();
+  /* 行内代码含完整链接（v1.2.1 新增）：微信编辑器会把代码里的 URL 自动转成可点链接，
+     破坏代码样式；且长代码不可断行，会引发公众号默认两端对齐的整行拉伸（行内大空隙）。 */
+  (function(){
+    preview.querySelectorAll('code').forEach(function(el){
+      if(el.closest && el.closest('pre')) return;
+      var txt=el.textContent||'';
+      if(/https?:\/\//i.test(txt)){
+        issues.push({rule:'代码内含链接',el:el,sev:'warn',
+          desc:'行内代码里有完整 URL——微信编辑器会把它自动转成可点链接，破坏代码样式；长代码不可断行，还会引发两端对齐拉伸。'+
+               '改法：命令放代码样式，URL 移到代码外（普通文本或手动链接）'});
+      }
+    });
   })();
   renderIssues(issues);
 }

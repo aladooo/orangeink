@@ -2,7 +2,19 @@
 
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
-## [1.2.0] - 2026-09-30
+## [1.2.1] - 2026-10-08
+
+### Fixed
+
+- **linkify 全角污染（坏链）**：linkify-it 会把紧贴 URL 的全角标点连同后续汉字一起吸进自动链接（`https://…orangeink，装到用户级目录` → href 变 `…orangeink%EF%BC%8C…`，链接文字带中文，点开即坏链）——新增 core 规则 `oimd_linkify_cjk`：解码后「链接文字 === href」才认定自动链接，在第一个非 ASCII 字符处截断 href 与链接文字，余文还原为普通文本；手写 `[]()` 链接（含中文路径）不受影响
+- **CLI 自检补盲区**：`render.mjs` 静态自检缺「加粗/斜体未生效（裸星号）」规则（此前只在浏览器版）——同一篇稿子浏览器拦 2 项、CLI 报 0 项；已按浏览器版同口径移植（2.1），code/pre 内星号不误报
+
+### Added
+
+- **自检器新增「代码内含链接」**（浏览器版 + CLI 2.2）：行内代码含完整 URL 时提示——微信编辑器会把代码里的 URL 自动转成可点链接、破坏代码样式，且长代码不可断行会引发公众号默认两端对齐的整行拉伸；改法：命令放代码样式、URL 移到代码外
+
+[1.2.1]: https://github.com/aladooo/orangeink/releases/tag/v1.2.1
+[1.2.0]: https://github.com/aladooo/orangeink/releases/tag/v1.2.0
 
 ### Added
 
@@ -11,7 +23,6 @@
 - **对拍护栏** `orangeink/scripts/parity-check.mjs`：jsdom 执行浏览器版原脚本与 CLI 逐字节比对，默认对拍同仓 `index.html`——模板改动即改即验（验收：sample + 07~20 期 14 篇真文逐字节一致）
 - `references/`（写作规范 / 合规坑位表 / 草稿箱 API 对接）与 `tests/`（全语法测试稿 + 复制页微调栏 jsdom 测试 20 项）
 
-[1.2.0]: https://github.com/aladooo/orangeink/releases/tag/v1.2.0
 [1.1.0]: https://github.com/aladooo/orangeink/releases/tag/v1.1.0
 
 ## [1.1.0] - 2026-09-27
