@@ -5,7 +5,7 @@ license: MIT
 compatibility: Node >= 18；换机部署后在 skill 目录执行 npm install jsdom 一次
 metadata:
   author: AladoooWu
-  version: 1.2.1
+  version: 1.2.2
 ---
 
 # 橙墨排版 Skill（orangeink · oimd）

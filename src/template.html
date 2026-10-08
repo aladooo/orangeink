@@ -174,7 +174,7 @@ html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
   <div id="checkPanel"><span id="toggleCheck">收起 ▾</span><div class="cnt">自检面板：粘贴内容后点「自检」</div></div>
   <footer id="siteFooter">
     <span class="f-brand">橙墨 orangeink · oimd</span>
-    <span class="f-ver">v1.2.1</span>
+    <span class="f-ver">v1.2.2</span>
     <span id="fUpdate" style="display:none"></span>
     <span class="f-lic">MIT 开源</span>
     <span class="sp"></span>
@@ -477,7 +477,18 @@ md.renderer.rules.heading_open    = function(t,i,o,e,s){
 };
 md.renderer.rules.strong_open     = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.strong); };
 md.renderer.rules.em_open         = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.em); };
-md.renderer.rules.link_open       = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.a); };
+md.renderer.rules.link_open       = function(t,i,o,e,s){
+  /* 长 URL 链接断行（v1.2.2）：链接文字本身是完整 URL（无空格长串）时，窄容器内无断行点
+     会横向溢出（手机模拟 375px 实测）→ 对这类链接追加 word-break:break-all。
+   只对「文字=URL」的链接生效，普通文字链接（含中文）不受影响。 */
+  var st=S.a, inner='', k;
+  for(k=i+1;k<t.length;k++){
+    if(t[k].type==='link_close') break;
+    if(t[k].type==='text') inner+=t[k].content;
+  }
+  if(/^(https?:\/\/|www\.)\S+$/i.test(inner.trim())) st+='word-break:break-all;';
+  return wrap(t,i,o,e,s,st);
+};
 /* 列表深度计数：一级用主样式，嵌套（二级）用「退半步」样式 S.ul2/S.li2 */
 var listDepth=0;
 md.renderer.rules.bullet_list_open= function(t,i,o,e,s){ listDepth++; return wrap(t,i,o,e,s, listDepth>1?S.ul2:S.ul); };

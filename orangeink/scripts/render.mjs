@@ -287,7 +287,18 @@ function makeMd(ctx) {
   };
   md.renderer.rules.strong_open = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.strong); };
   md.renderer.rules.em_open     = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.em); };
-  md.renderer.rules.link_open   = function(t,i,o,e,s){ return wrap(t,i,o,e,s,S.a); };
+  md.renderer.rules.link_open = function(t,i,o,e,s){
+    /* 长 URL 链接断行（v1.2.2）：链接文字本身是完整 URL（无空格长串）时，窄容器内无断行点
+       会横向溢出（手机模拟 375px 实测）→ 对这类链接追加 word-break:break-all。
+       只对「文字=URL」的链接生效，普通文字链接（含中文）不受影响。 */
+    let st = S.a, inner = '';
+    for (let k=i+1; k<t.length; k++) {
+      if (t[k].type==='link_close') break;
+      if (t[k].type==='text') inner += t[k].content;
+    }
+    if (/^(https?:\/\/|www\.)\S+$/i.test(inner.trim())) st += 'word-break:break-all;';
+    return wrap(t,i,o,e,s,st);
+  };
   let listDepth = 0;
   md.renderer.rules.bullet_list_open  = function(t,i,o,e,s){ listDepth++; return wrap(t,i,o,e,s, listDepth>1?S.ul2:S.ul); };
   md.renderer.rules.bullet_list_close = function(t,i,o,e,s){ listDepth--; return s.renderToken(t,i,o); };
@@ -688,7 +699,7 @@ export function checkStatic(html) {
 }
 
 /* ===== 一键复制页（浏览器端：一键复制 + 二次微调栏 + 品牌位） ===== */
-const VERSION = '1.2.1';
+const VERSION = '1.2.2';
 const COLOR_KEYS = ['ORANGE','DEEP','EMBER','STRONG','CHIP','LINK','BROWN','TAN','TEXT','TEXT2','TXTQ','WARMBG','WARMBG2','CODEBG','CODE','ZEBRA','LIST2','BORDER','PTEYE','PTNOTE'];
 const ALERT_ORDER = ['NOTE','TIP','IMPORTANT','WARNING','CAUTION'];
 function themeColorList(t){

@@ -2,6 +2,12 @@
 
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [1.2.2] - 2026-10-09
+
+### Fixed
+
+- **长 URL 链接横向溢出**：链接文字本身是完整 URL 时（无空格长串，如 `https://github.com/aladooo/orangeink/tree/main/orangeink`），窄容器（手机 375px 模拟实测）内无断行点会横向溢出出界——`link_open` 渲染时对「链接文字=URL」的链接追加 `word-break:break-all`（浏览器版 + CLI 同口径；普通文字链接不受影响）
+
 ## [1.2.1] - 2026-10-08
 
 ### Fixed
@@ -13,8 +19,11 @@
 
 - **自检器新增「代码内含链接」**（浏览器版 + CLI 2.2）：行内代码含完整 URL 时提示——微信编辑器会把代码里的 URL 自动转成可点链接、破坏代码样式，且长代码不可断行会引发公众号默认两端对齐的整行拉伸；改法：命令放代码样式、URL 移到代码外
 
+[1.2.2]: https://github.com/aladooo/orangeink/releases/tag/v1.2.2
 [1.2.1]: https://github.com/aladooo/orangeink/releases/tag/v1.2.1
 [1.2.0]: https://github.com/aladooo/orangeink/releases/tag/v1.2.0
+
+## [1.2.0] - 2026-09-30
 
 ### Added
 
