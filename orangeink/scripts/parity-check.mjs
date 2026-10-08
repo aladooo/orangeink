@@ -10,15 +10,28 @@ import { renderOrangeink } from './render.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mdPath = path.resolve(process.argv[2] || path.join(__dirname, '..', 'tests', 'sample.md'));
-// 模板解析顺序（v1.2.3）：
+// 模板解析顺序：
 //   1) argv[3] 显式指定的 index.html
 //   2) 同仓检出路径 ../../index.html（skill 目录在 orangeink 仓内时）
-//   3) 从仓库 raw 拉取（缓存到系统临时目录，1 小时内复用）——独立安装（用户级 skill 目录）也能跑
+//   3) 远端兜底 —— 默认关闭！仅当环境变量 OIMD_REMOTE_TEMPLATE=1 时启用：
+//      从官方仓 raw 拉取 index.html（缓存到系统临时目录，1 小时内复用）。
+//      远端拉取并执行代码会命中平台安全审计的「Remote Payload Retrieval
+//      and Execution」模式，故默认禁用；如启用，也仅信任 aladooo/orangeink 官方 main。
 const repoTemplate = path.join(__dirname, '..', '..', 'index.html');
 const RAW_URL = 'https://raw.githubusercontent.com/aladooo/orangeink/main/index.html';
+const REMOTE_OK = process.env.OIMD_REMOTE_TEMPLATE === '1';
 async function resolveTemplate() {
   if (process.argv[3]) return { src: fs.readFileSync(path.resolve(process.argv[3]), 'utf-8'), from: 'argv' };
   if (fs.existsSync(repoTemplate)) return { src: fs.readFileSync(repoTemplate, 'utf-8'), from: 'repo checkout' };
+  if (!REMOTE_OK) {
+    throw new Error(
+      '本地未找到浏览器版模板：' + repoTemplate + '\n' +
+      '  三种解决方式：\n' +
+      '  ① node parity-check.mjs <文章.md> <index.html 路径> — 显式指定模板；\n' +
+      '  ② clone 官方仓（github.com/aladooo/orangeink）后在仓内 skill 目录重跑；\n' +
+      '  ③ 允许从官方仓 raw 拉取（默认关闭，审核场景请勿开启）：设置环境变量 OIMD_REMOTE_TEMPLATE=1'
+    );
+  }
   const os = await import('os');
   const cache = path.join(os.tmpdir(), 'orangeink-parity-index.html');
   if (fs.existsSync(cache) && Date.now() - fs.statSync(cache).mtimeMs < 3600_000)
