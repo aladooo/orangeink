@@ -10,14 +10,35 @@ import { renderOrangeink } from './render.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mdPath = path.resolve(process.argv[2] || path.join(__dirname, '..', 'tests', 'sample.md'));
-// 默认对拍同仓的浏览器版模板（orangeink/ 在 orangeink 仓内 = ../../index.html）；
-// 独立安装（用户级 skill 目录）时回退到本机 orangeink 检出路径
+// 模板解析顺序（v1.2.3）：
+//   1) argv[3] 显式指定的 index.html
+//   2) 同仓检出路径 ../../index.html（skill 目录在 orangeink 仓内时）
+//   3) 从仓库 raw 拉取（缓存到系统临时目录，1 小时内复用）——独立安装（用户级 skill 目录）也能跑
 const repoTemplate = path.join(__dirname, '..', '..', 'index.html');
-const fallbackTemplate = 'C:/Users/oday/WorkBuddy/自媒体-个人/中登行走中/orangeink/index.html';
-const htmlPath = process.argv[3] || (fs.existsSync(repoTemplate) ? repoTemplate : fallbackTemplate);
-
+const RAW_URL = 'https://raw.githubusercontent.com/aladooo/orangeink/main/index.html';
+async function resolveTemplate() {
+  if (process.argv[3]) return { src: fs.readFileSync(path.resolve(process.argv[3]), 'utf-8'), from: 'argv' };
+  if (fs.existsSync(repoTemplate)) return { src: fs.readFileSync(repoTemplate, 'utf-8'), from: 'repo checkout' };
+  const os = await import('os');
+  const cache = path.join(os.tmpdir(), 'orangeink-parity-index.html');
+  if (fs.existsSync(cache) && Date.now() - fs.statSync(cache).mtimeMs < 3600_000)
+    return { src: fs.readFileSync(cache, 'utf-8'), from: 'cache (tmpdir)' };
+  const resp = await fetch(RAW_URL);
+  if (!resp.ok) throw new Error('无法获取浏览器版模板：本地无 ' + repoTemplate + '，且 raw 拉取 HTTP ' + resp.status);
+  const src = await resp.text();
+  fs.writeFileSync(cache, src);
+  return { src, from: 'raw.githubusercontent.com (cached to tmpdir)' };
+}
+let tpl;
+try {
+  tpl = await resolveTemplate();
+} catch (e) {
+  console.error('FAIL: ' + e.message);
+  process.exit(1);
+}
+console.error('[parity] template from: ' + tpl.from);
+const pageSrc = tpl.src;
 const mdSrc = fs.readFileSync(mdPath, 'utf-8');
-const pageSrc = fs.readFileSync(htmlPath, 'utf-8');
 
 /* ① 浏览器版：原脚本在 jsdom 中执行 */
 const dom = new JSDOM(pageSrc, {

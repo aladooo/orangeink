@@ -144,9 +144,9 @@ npx skills add https://github.com/aladooo/orangeink/tree/main/orangeink
 **WorkBuddy：** 没有一键安装入口，但把 GitHub 地址写进任务里，agent 会自行完成安装。推荐直接说：
 
 > 帮我安装这个 skill：https://github.com/aladooo/orangeink/tree/main/orangeink
-> 装到用户级目录 ~/.workbuddy/skills/orangeink，并在该目录执行 npm install jsdom
+> 装到用户级目录 ~/.workbuddy/skills/orangeink，并在该目录执行 npm install（jsdom 已声明在依赖里）
 
-**其他平台（手动）：** clone 本仓后把 `orangeink/` 目录放进你的 skills 目录，并在其中 `npm install jsdom`（唯一依赖）。
+**其他平台（手动）：** clone 本仓后把 `orangeink/` 目录放进你的 skills 目录，并在其中 `npm install`（jsdom 已声明在 package.json）。
 
 ```bash
 node orangeink/scripts/render.mjs 文章.md -o 片段.html --copy-page 复制页.html --draft 草稿.json

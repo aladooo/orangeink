@@ -2,10 +2,10 @@
 name: orangeink
 description: 橙墨（orangeink）公众号排版 skill。两种用法：① 按橙墨写作规范产出/审阅公众号 Markdown 文稿；② 把 Markdown 一键转成可直接发布微信公众号的内容——纯净合规 HTML（API 用）、一键复制页（浏览器打开→复制→粘贴）、公众号草稿箱 API 请求体 JSON，输出自带静态合规自检。触发词：橙墨排版、公众号排版、排版发布、oimd、orangeink。
 license: MIT
-compatibility: Node >= 18；换机部署后在 skill 目录执行 npm install jsdom 一次
+compatibility: Node >= 18；换机部署后在 skill 目录执行 npm install 一次（jsdom 已声明在 package.json dependencies）
 metadata:
   author: AladoooWu
-  version: 1.2.2
+  version: 1.2.3
 ---
 
 # 橙墨排版 Skill（orangeink · oimd）
@@ -61,11 +61,11 @@ CLI 自检覆盖**静态规则**：无单位行高 / text-align:start / font-fam
 SKILL.md                      本文件
 scripts/render.mjs            headless 渲染器（逻辑源：orangeink v1.1.0，函数级移植）
 scripts/parity-check.mjs      对拍护栏
-vendor/markdown-it.min.js     markdown-it 14.3.2（MIT）
+vendor/markdown-it.js        markdown-it 14.3.2（MIT，未压缩发行版）
 references/writing-guide.md   橙墨写作规范（写稿前必读）
 references/wechat-rules.md    微信合规规则与历史坑位表
 references/wechat-api.md      草稿箱 API 注意事项
-package.json / node_modules   jsdom 依赖（npm install jsdom；打包发布时排除 node_modules）
+package.json / node_modules   jsdom 依赖（npm install 即装；打包发布时排除 node_modules）
 tests/sample.md               全语法测试稿
 tests/test-copypage.mjs       复制页微调栏冒烟测试（node test-copypage.mjs <复制页.html>）
 ```
@@ -81,5 +81,5 @@ tests/test-copypage.mjs       复制页微调栏冒烟测试（node test-copypag
 
 - **结构合规**：本 skill 即 Claude Agent Skills 通用规范布局（`SKILL.md` + `scripts/` + `references/` + `tests/`），frontmatter 仅用通用字段（name / description / license / metadata）——**OpenClaw 完全兼容 Claude Skills 格式**，目录拷贝即用；WorkBuddy 原生支持（触发词「橙墨排版」）；Codex 无 skill 机制，把 SKILL.md 当指令文档 + 直接跑 render.mjs CLI
 - **frontmatter 自查**（skills.sh / SkillHub 校验口径）：`name: orangeink` 为 kebab-case、≤64 字符、与目录同名 ✓；`description` 单行、≤1024 字符、含触发词 ✓
-- **打包发布注意（重要）**：SkillHub 类平台限 100 文件 / 10MB / 单文件 1MB，**打包时必须排除 `node_modules/`**，改为在 SKILL.md 声明依赖（`compatibility: Node >= 18`）；换机部署后在 skill 目录执行 `npm install jsdom` 一次即可；vendor 的 markdown-it.min.js 为随包文件，不受影响
+- **打包发布注意（重要）**：SkillHub 类平台限 100 文件 / 10MB / 单文件 1MB，**打包时必须排除 `node_modules/`**，改为在 SKILL.md 声明依赖（`compatibility: Node >= 18`）；换机部署后在 skill 目录执行 `npm install` 一次即可（依赖已声明）；vendor 的 markdown-it.js 为随包文件，不受影响
 - 微调栏/自检等页面脚本为自包含内联 JS，无运行时外部依赖；skill 内所有命令均用相对路径，Windows / macOS / Linux 通用

@@ -2,6 +2,17 @@
 
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [1.2.3] - 2026-10-09
+
+### Fixed
+
+- **parity-check.mjs 移除作者本机硬编码路径**：模板解析改为三级回退——argv 显式指定 → 同仓检出 `../../index.html` → 从 `raw.githubusercontent.com/aladooo/orangeink/main/index.html` 拉取（缓存系统临时目录 1 小时）；独立安装（用户级 skill 目录、无仓库检出）也能直接跑对拍
+- **skill 包内 vendor 换未压缩发行版**：`markdown-it.min.js` → `markdown-it.js`（14.3.2 未压缩 dist，MIT）——消除 ClawHub 安全审计的 `suspicious.obfuscated_code`（Warn，压缩 JS 误伤混淆启发式）
+
+### Added
+
+- **package.json 声明 jsdom 依赖**（`^29.1.1`）：换机部署后 `npm install` 一步到位，不再需要手动 `npm install jsdom`
+
 ## [1.2.2] - 2026-10-09
 
 ### Fixed
@@ -19,6 +30,7 @@
 
 - **自检器新增「代码内含链接」**（浏览器版 + CLI 2.2）：行内代码含完整 URL 时提示——微信编辑器会把代码里的 URL 自动转成可点链接、破坏代码样式，且长代码不可断行会引发公众号默认两端对齐的整行拉伸；改法：命令放代码样式、URL 移到代码外
 
+[1.2.3]: https://github.com/aladooo/orangeink/releases/tag/v1.2.3
 [1.2.2]: https://github.com/aladooo/orangeink/releases/tag/v1.2.2
 [1.2.1]: https://github.com/aladooo/orangeink/releases/tag/v1.2.1
 [1.2.0]: https://github.com/aladooo/orangeink/releases/tag/v1.2.0

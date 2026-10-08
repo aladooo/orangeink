@@ -1,6 +1,9 @@
 {
   "name": "orangeink-skill",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
-  "description": "orangeink headless renderer skill deps"
+  "description": "orangeink headless renderer skill deps",
+  "dependencies": {
+    "jsdom": "^29.1.1"
+  }
 }
