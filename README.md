@@ -8,6 +8,7 @@
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License"></a>
 <a href="https://github.com/aladooo/orangeink/pulls"><img src="https://img.shields.io/badge/PRs-welcome-blue" alt="PRs welcome"></a>
 <a href="https://skills.sh/aladooo/orangeink"><img src="https://skills.sh/b/aladooo/orangeink" alt="skills.sh installs"></a>
+<a href="https://clawhub.ai/skill/orangeink"><img src="https://img.shields.io/badge/ClawHub-orangeink-f2582c" alt="ClawHub"></a>
 <img src="https://img.shields.io/badge/build-none-lightgrey" alt="no build needed">
 <img src="https://img.shields.io/badge/dependencies-0-brightgreen" alt="zero runtime deps">
 </p>
@@ -130,13 +131,22 @@ tools/              独立检测器说明（见 wechat-article-checker 仓库）
 - 一键渲染为**可直接发布公众号**的内容：纯净合规 HTML（API 用）/ 一键复制页 / 草稿箱 API 请求体 JSON，输出带静态合规自检
 - `orangeink/scripts/parity-check.mjs` 在 jsdom 里执行浏览器版原脚本与 CLI 输出逐字节对拍——**同仓同版本，模板改了立刻能验**
 
-**安装（skills CLI，支持 Claude Code / Codex / Amp / Cline 等 79 个 agent）：**
+**安装（按平台任选其一）：**
 
 ```bash
+# ClawHub（OpenClaw 生态，已上架 clawhub.ai/skill/orangeink）
+npx clawhub install orangeink
+
+# skills CLI（支持 Claude Code / Codex / Amp / Cline 等 79 个 agent）
 npx skills add https://github.com/aladooo/orangeink/tree/main/orangeink
 ```
 
-**安装（手动 clone，其余平台）：** clone 本仓后在 `orangeink/` 下 `npm install jsdom`（唯一依赖）。
+**WorkBuddy：** 没有一键安装入口，但把 GitHub 地址写进任务里，agent 会自行完成安装。推荐直接说：
+
+> 帮我安装这个 skill：https://github.com/aladooo/orangeink/tree/main/orangeink
+> 装到用户级目录 ~/.workbuddy/skills/orangeink，并在该目录执行 npm install jsdom
+
+**其他平台（手动）：** clone 本仓后把 `orangeink/` 目录放进你的 skills 目录，并在其中 `npm install jsdom`（唯一依赖）。
 
 ```bash
 node orangeink/scripts/render.mjs 文章.md -o 片段.html --copy-page 复制页.html --draft 草稿.json
