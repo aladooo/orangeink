@@ -21,7 +21,7 @@ ok(stage.innerHTML === orig, '初始状态 = 原始渲染（未应用任何变�
 ok(doc.getElementById('optTheme').value === 'orangeink', '主题下拉默认 orangeink');
 ok(doc.getElementById('optZoom').value === '1', '字号下拉默认标准');
 ok(doc.getElementById('optPad').value === '14', '边距下拉默认窄 14');
-ok(/orangeink · oimd v1\.2\.0/.test(doc.getElementById('bar').textContent), '品牌位：顶部 orangeink · oimd 版本号');
+ok(/orangeink · oimd v\d+\.\d+\.\d+/.test(doc.getElementById('bar').textContent), '品牌位：顶部 orangeink · oimd 版本号');
 ok(/github\.com\/aladooo\/orangeink/.test(doc.getElementById('foot').textContent), '品牌位：底部引流链接');
 ok(!doc.getElementById('hint'), '近似提示已移除（不暴露 CLI 细节给最终读者）');
 ok(doc.getElementById('optPhone').checked === true && doc.body.className === 'phone', '手机预览默认开启');
