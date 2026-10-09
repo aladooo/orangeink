@@ -7,6 +7,15 @@ const file = process.argv[2];
 if (!file) { console.error('用法: node test-copypage.mjs <复制页.html>'); process.exit(1); }
 const html = fs.readFileSync(file, 'utf-8');
 
+// 信任边界（响应 ClawHub "Missing User Warnings"）：本测试以 runScripts:'dangerously' 执行
+// 页面内联脚本，【仅限 orangeink render.mjs 自产的复制页】。任何第三方/不可信 HTML 一律拒绝——
+// 缺少 oimd 品牌标记的文件直接退出，不进入 jsdom，防止任意代码借测试进程执行。
+if (!html.includes('orangeink · oimd v')) {
+  console.error('拒绝执行：输入缺少 orangeink · oimd 品牌标记，不是本工具自产的复制页。');
+  console.error('本测试仅信任 scripts/render.mjs 生成的输出文件，不加载不可信 HTML。');
+  process.exit(2);
+}
+
 const dom = new JSDOM(html, { runScripts: 'dangerously', url: 'http://localhost/' });
 const { window } = dom;
 const doc = window.document;

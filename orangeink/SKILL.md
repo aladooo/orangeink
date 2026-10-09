@@ -5,8 +5,13 @@ license: MIT
 compatibility: Node >= 18；换机部署后在 skill 目录执行 npm install 一次（jsdom / markdown-it 已精确锁版本声明在 package.json dependencies）
 metadata:
   author: AladoooWu
-  version: 1.2.4
+  version: 1.2.5
   locale: zh-CN（微信公众号场景限定，产品定义即中文输出）
+  permissions:
+    fs-read: 仅读取用户在命令行显式传入的 Markdown 文件，及本 skill 目录内的自身文件
+    fs-write: 仅写入用户在命令行显式指定的输出路径；不写任何其他位置
+    network: 默认零网络访问。唯一例外：parity-check.mjs 在「同仓模板与 argv 模板均缺失」且用户显式设置环境变量 OIMD_REMOTE_TEMPLATE=1 时，才从官方仓 raw.githubusercontent.com/aladooo/orangeink 拉取 index.html 用于对拍
+    exec: 仅当前 node 进程内执行；不调用 shell，不执行任何外部二进制
 ---
 
 # 橙墨排版 Skill（orangeink · oimd）
