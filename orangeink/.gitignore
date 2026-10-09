@@ -1,3 +1,7 @@
 # skill 依赖不入库（jsdom 约 26MB，SkillHub/Skills 规范限 100 文件/10MB）
 node_modules/
 package-lock.json
+
+# 测试产物为生成文件，不入库/不进包（本地需要时用 render.mjs 现生成）
+tests/sample.out.html
+tests/sample.copy.html

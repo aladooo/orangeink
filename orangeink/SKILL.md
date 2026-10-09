@@ -5,7 +5,7 @@ license: MIT
 compatibility: Node >= 18；换机部署后在 skill 目录执行 npm install 一次（jsdom / markdown-it 已精确锁版本声明在 package.json dependencies）
 metadata:
   author: AladoooWu
-  version: 1.2.5
+  version: 1.2.6
   locale: zh-CN（微信公众号场景限定，产品定义即中文输出）
   permissions:
     fs-read: 仅读取用户在命令行显式传入的 Markdown 文件，及本 skill 目录内的自身文件

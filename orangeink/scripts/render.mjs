@@ -701,7 +701,7 @@ export function checkStatic(html) {
 }
 
 /* ===== 一键复制页（浏览器端：一键复制 + 二次微调栏 + 品牌位） ===== */
-const VERSION = '1.2.5';
+const VERSION = '1.2.6';
 const COLOR_KEYS = ['ORANGE','DEEP','EMBER','STRONG','CHIP','LINK','BROWN','TAN','TEXT','TEXT2','TXTQ','WARMBG','WARMBG2','CODEBG','CODE','ZEBRA','LIST2','BORDER','PTEYE','PTNOTE'];
 const ALERT_ORDER = ['NOTE','TIP','IMPORTANT','WARNING','CAUTION'];
 function themeColorList(t){
