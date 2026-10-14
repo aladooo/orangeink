@@ -90,7 +90,7 @@ tests/test-copypage.mjs       复制页微调栏冒烟测试（node test-copypag
 - 逻辑源 = **orangeink v1.1.0** `src/template.html`（GitHub: aladooo/orangeink，MIT）
 - orangeink 发新版后：① 重跑 parity-check；② 如失败，按 diff 同步 render.mjs；③ 更新本文件基准版本号
 - 不要在 render.mjs 里「顺手优化」样式逻辑——对拍一致是唯一真理
-- skill 版本：**oimd v1.2.9**（2026-10-14：小说稿规格行按行识别——引子与结尾帧相邻写在同一引用块（N-002 起置顶体例）不再互吞，收束卡统一渲染到文末；CLI 新增 `--chapter <题>` 为无章节行的「下」集兜底刊头章题；浏览器版同步修复。对拍基准 v1.1.0 不变）
+- skill 版本：**oimd v1.2.9**（2026-10-14：小说稿规格行按行识别——引子与结尾帧相邻写在同一引用块（N-002 起置顶体例）不再互吞，收束卡统一渲染到文末；章节行「（第 N 幕收束）」尾缀不进章题/章节牌；CLI 新增 `--chapter <题>` 为无章节行的「下」集兜底刊头章题；浏览器版同步修复。对拍基准 v1.1.0 不变）
 
 ## 跨 agent 兼容与打包（SkillHub / OpenClaw / Codex）
 
