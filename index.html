@@ -174,7 +174,7 @@ html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
   <div id="checkPanel"><span id="toggleCheck">收起 ▾</span><div class="cnt">自检面板：粘贴内容后点「自检」</div></div>
   <footer id="siteFooter">
     <span class="f-brand">橙墨 orangeink · oimd</span>
-    <span class="f-ver">v1.2.8</span>
+    <span class="f-ver">v1.2.9</span>
     <span id="fUpdate" style="display:none"></span>
     <span class="f-lic">MIT 开源</span>
     <span class="sp"></span>
@@ -518,8 +518,10 @@ md.core.ruler.push('novel_structure', function(state){
   var pad3=('00'+epNum).slice(-3);
   var epLabel='第 '+pad3+' 集 · '+epPart;
 
-  /* 扫描：首个章节行→章题；落款→sigParas；引子/结尾帧引用块→文本并整块隐藏 */
-  var chapRe=/^第[0-9〇零一二两三四五六七八九十百千]+章[\s　]+(.{1,14})$/, chTitle='', introTxt='', endRaw='', endIdx=-1;
+  /* 扫描：首个章节行→章题；落款→sigParas；引子/结尾帧引用块→文本并整块隐藏。
+     规格行按「行」识别（v1.2.9）：N-002 起体例把引子与结尾帧相邻写在文首
+     同一引用块（软换行），整块匹配会互吞——引子只取「引子：」行，结尾帧只取「结尾帧：」行。 */
+  var chapRe=/^第[0-9〇零一二两三四五六七八九十百千]+章[\s　]+(.{1,14})$/, chTitle='', introTxt='', endRaw='';
   for(i=0;i<toks.length;i++){
     if(toks[i].type!=='blockquote_open'){
       if(toks[i].type==='inline' && toks[i-1] && toks[i-1].type==='paragraph_open' && toks[i-1].level===0){
@@ -533,17 +535,19 @@ md.core.ruler.push('novel_structure', function(state){
     var inner=-1;
     for(j=i+1;j<jc;j++){ if(toks[j].type==='inline'){ inner=j; break; } }
     if(inner<0) continue;
-    var btx=(toks[inner].content||'').trim();
-    if(!introTxt && /^引子[：:]/.test(btx)){
-      introTxt=btx.replace(/^引子[：:]\s*/,'');
-      toHtml(toks[i],'');
-      /* render() 不检查 inline 自身 hidden → inline 需转空 html_block 才真隐藏 */
-      for(j=i+1;j<=jc;j++){ if(toks[j].type==='inline'){ toHtml(toks[j],''); } else { toks[j].hidden=true; } }
-    } else if(!endRaw && /^结尾帧[：:]/.test(btx)){
-      endRaw=btx; endIdx=i;
-      toHtml(toks[i],'');
-      for(j=i+1;j<=jc;j++){ if(toks[j].type==='inline'){ toHtml(toks[j],''); } else { toks[j].hidden=true; } }
+    var rows=(toks[inner].content||'').split(/\r?\n/), hitIntro=-1, hitEnd=-1;
+    for(j=0;j<rows.length;j++){
+      var r0=rows[j].trim();
+      if(hitIntro<0 && /^引子[：:]/.test(r0)) hitIntro=j;
+      else if(hitEnd<0 && /^结尾帧[：:]/.test(r0)) hitEnd=j;
     }
+    var used=false;
+    if(hitIntro>=0 && !introTxt){ introTxt=rows[hitIntro].trim().replace(/^引子[：:]\s*/,''); used=true; }
+    if(hitEnd>=0 && !endRaw){ endRaw=rows[hitEnd].trim(); used=true; }
+    if(!used) continue;
+    toHtml(toks[i],'');
+    /* render() 不检查 inline 自身 hidden → inline 需转空 html_block 才真隐藏 */
+    for(j=i+1;j<=jc;j++){ if(toks[j].type==='inline'){ toHtml(toks[j],''); } else { toks[j].hidden=true; } }
   }
   /* 刊头大字替代 h1 后，导语放大规则不适用于小说稿 */
   for(i=0;i<toks.length;i++){ if(toks[i].type==='paragraph_open') leadParas.delete(toks[i]); }
@@ -583,17 +587,21 @@ md.core.ruler.push('novel_structure', function(state){
     }
   }
 
-  /* 结尾帧引用块 → 结尾帧卡（海棠纸底 · STRONG 原句（「；」后折行）· BROWN 预告行） */
-  if(endRaw && endIdx>=0){
+  /* 结尾帧 → 收束卡（海棠纸底 · STRONG 原句（「；」后折行）· BROWN 预告行）。
+     v1.2.9：统一渲染到文末（刊尾行之前）——N-001 体例规格行在文末，输出不变；
+     N-002 起规格行与引子同块置顶，原位渲染会把卡插在刊头下。 */
+  if(endRaw){
     var mo=/原句[「"]+([^」"]+)[」"]+/.exec(endRaw), mp2=/下集预告[「"]+([^」"]+)[」"]+/.exec(endRaw);
     var q1=mo?mo[1].trim():'', q2=mp2?mp2[1].trim():'';
-    toks[endIdx].content=
+    var cardTok=new state.Token('html_block','',0);
+    cardTok.content=
       '<section style="background:'+C.WARMBG+';border-radius:8px;padding:20px 18px 16px;margin:4px 0 24px;">'
       +'<section style="text-align:center;font-size:11px;'+lh(11,1.6)+'letter-spacing:3px;color:'+C.BROWN+';font-weight:700;">本集 · 收束</section>'
       +(q1?'<section style="text-align:center;font-size:17px;'+lh(17,1.7)+'font-weight:700;color:'+C.STRONG+';margin:10px 0 12px;letter-spacing:.5px;">'+escH(q1).replace(/；/g,'；<br>')+'</section>':'')
       +'<section style="text-align:center;margin:0 auto 12px;width:28px;height:2px;background:'+C.ORANGE+';overflow:hidden;font-size:2px;'+lh(2,1)+'">&#160;</section>'
       +(q2?'<section style="text-align:center;font-size:13px;'+lh(13,1.8)+'color:'+C.BROWN+';">下集 · '+escH(q2)+'</section>':'')
       +'</section>';
+    toks.push(cardTok);
   }
 
   /* 刊尾行：细线 + 刊名 · 刊—001·上（呼应封面底行） */

@@ -44,7 +44,7 @@ node <skill目录>/scripts/render.mjs <文章.md> \
 - `--copy-page`：**一键复制页**（自带「一键复制到公众号」按钮），浏览器打开 → 点按钮 → 公众号编辑器 Ctrl+V。这是**默认发布路径**
 - `--draft`：公众号 `draft/add` API 请求体（title/author/digest/content），默认作者「登叔」，可用 `--title/--author/--digest` 覆盖
 - `--meta`：字数（源文/公众号口径）/ 图片清单 / 自检结果 JSON
-- 主题：`--theme orangeink|inkblue|pine|gold|haitang`（默认 orangeink 炭黑×亮橙）；`--zoom 0.94|1|1.06`；`--pad 0|14|22`
+- 主题：`--theme orangeink|inkblue|pine|gold|haitang`（默认 orangeink 炭黑×亮橙）；`--zoom 0.94|1|1.06`；`--pad 0|14|22`；小说稿「下」集无章节行时用 `--chapter <题>` 补刊头章题（如 `--chapter 醒`；正文有章节行时以文稿为准）
 - 复制页自带**二次微调栏**：主题 / 字号 / 边距 / 深色（夜读配色）可即调即复制；「手机预览」**默认开启**（仅切 375px 预览不影响复制内容）。页面不展示 CLI 提示，「微调为快速近似」的说明只保留在本文件（agent 侧）：微调是浏览器端调色板映射的**快速近似**（切换主题时警告块底色等近似），精确效果用 `--theme/--zoom/--pad` 重新生成；深色为正文深底配色，公众号正文区两侧会露白边，交付前提示用户
 - 复制页含**品牌位**：顶栏 `orangeink · oimd v<版本号>`、底部引流链接（github.com/aladooo/orangeink）——仅在复制页页面上，**不会进入复制到公众号的内容**
 - 退出码：0=成功且自检 0 项；1=渲染失败；2=自检有 error 级违规
@@ -90,7 +90,7 @@ tests/test-copypage.mjs       复制页微调栏冒烟测试（node test-copypag
 - 逻辑源 = **orangeink v1.1.0** `src/template.html`（GitHub: aladooo/orangeink，MIT）
 - orangeink 发新版后：① 重跑 parity-check；② 如失败，按 diff 同步 render.mjs；③ 更新本文件基准版本号
 - 不要在 render.mjs 里「顺手优化」样式逻辑——对拍一致是唯一真理
-- skill 版本：**oimd v1.2.4**（2026-10-09：vendor 转 npm 精确锁依赖、远端模板拉取默认关闭、权限与信任边界声明；正文渲染逻辑未动，对拍护栏仍以 v1.1.0 为基准）
+- skill 版本：**oimd v1.2.9**（2026-10-14：小说稿规格行按行识别——引子与结尾帧相邻写在同一引用块（N-002 起置顶体例）不再互吞，收束卡统一渲染到文末；CLI 新增 `--chapter <题>` 为无章节行的「下」集兜底刊头章题；浏览器版同步修复。对拍基准 v1.1.0 不变）
 
 ## 跨 agent 兼容与打包（SkillHub / OpenClaw / Codex）
 

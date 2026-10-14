@@ -12,6 +12,7 @@
 //   --title <t>            draft 标题（默认取 H1 或文件名）
 //   --author <a>           draft 作者（默认「登叔」）
 //   --digest <d>           draft 摘要（默认取首段前 54 字）
+//   --chapter <t>          小说稿章题补齐：仅当正文无「第 X 章」行（如续写「下」集）时，用此值作刊头章题；正文有章节行时以文稿为准
 //   --theme <name>         orangeink|inkblue|pine|gold|haitang（默认 orangeink）
 //   --zoom <n>             字号倍率 0.94|1|1.06（默认 1）
 //   --pad <n>              两侧安全边距 px 0|14|22（默认 14）
@@ -103,8 +104,8 @@ const THEMES = {
 };
 
 /* ===== 渲染上下文（theme/zoom/pad 可配，对应浏览器版 OPT） ===== */
-function makeCtx({ theme='orangeink', zoom=1, pad=14 } = {}) {
-  const OPT = { zoom, pad, theme };
+function makeCtx({ theme='orangeink', zoom=1, pad=14, chapter='' } = {}) {
+  const OPT = { zoom, pad, theme, chapter };
   const C = THEMES[OPT.theme].C;
 
   const hexRgba = (h, a) => {
@@ -321,9 +322,11 @@ function makeMd(ctx) {
     const pad3 = ('00'+epNum).slice(-3);
     const epLabel = '第 '+pad3+' 集 · '+epPart;
 
-    /* 扫描：首个章节行→章题；落款→sigParas；引子/结尾帧引用块→文本并整块隐藏 */
+    /* 扫描：首个章节行→章题；落款→sigParas；引子/结尾帧引用块→文本并整块隐藏。
+       规格行按「行」识别（补丁 2026-10-14）：N-002 起体例把引子与结尾帧相邻写在文首
+       同一引用块（软换行），整块匹配会互吞——引子只取「引子：」行，结尾帧只取「结尾帧：」行。 */
     const chapRe=/^第[0-9〇零一二两三四五六七八九十百千]+章[\s　]+(.{1,14})$/;
-    let chTitle='', introTxt='', endRaw='', endIdx=-1;
+    let chTitle='', introTxt='', endRaw='';
     for (i=0;i<toks.length;i++){
       if (toks[i].type!=='blockquote_open'){
         if (toks[i].type==='inline' && toks[i-1] && toks[i-1].type==='paragraph_open' && toks[i-1].level===0){
@@ -337,18 +340,24 @@ function makeMd(ctx) {
       let inner=-1;
       for (j=i+1;j<jc;j++){ if (toks[j].type==='inline'){ inner=j; break; } }
       if (inner<0) continue;
-      const btx = (toks[inner].content||'').trim();
-      if (!introTxt && /^引子[：:]/.test(btx)){
-        introTxt = btx.replace(/^引子[：:]\s*/,'');
-        toHtml(toks[i],'');
-        /* render() 不检查 inline 自身 hidden → inline 需转空 html_block 才真隐藏 */
-        for (j=i+1;j<=jc;j++){ if (toks[j].type==='inline'){ toHtml(toks[j],''); } else { toks[j].hidden=true; } }
-      } else if (!endRaw && /^结尾帧[：:]/.test(btx)){
-        endRaw=btx; endIdx=i;
-        toHtml(toks[i],'');
-        for (j=i+1;j<=jc;j++){ if (toks[j].type==='inline'){ toHtml(toks[j],''); } else { toks[j].hidden=true; } }
+      const rows = (toks[inner].content||'').split(/\r?\n/);
+      let hitIntro=-1, hitEnd=-1;
+      for (j=0;j<rows.length;j++){
+        const r0 = rows[j].trim();
+        if (hitIntro<0 && /^引子[：:]/.test(r0)) hitIntro=j;
+        else if (hitEnd<0 && /^结尾帧[：:]/.test(r0)) hitEnd=j;
       }
+      let used=false;
+      if (hitIntro>=0 && !introTxt){ introTxt = rows[hitIntro].trim().replace(/^引子[：:]\s*/,''); used=true; }
+      if (hitEnd>=0 && !endRaw){ endRaw = rows[hitEnd].trim(); used=true; }
+      if (!used) continue;
+      toHtml(toks[i],'');
+      /* render() 不检查 inline 自身 hidden → inline 需转空 html_block 才真隐藏 */
+      for (j=i+1;j<=jc;j++){ if (toks[j].type==='inline'){ toHtml(toks[j],''); } else { toks[j].hidden=true; } }
     }
+    /* 章题补齐（CLI --chapter）：续写「下」集正文无章节行时兜底；文稿有章节行时以文稿为准 */
+    if (!chTitle && OPT.chapter) chTitle = String(OPT.chapter).trim();
+
     /* 刊头大字替代 h1 后，导语放大规则不适用于小说稿 */
     for (i=0;i<toks.length;i++){ if (toks[i].type==='paragraph_open') leadParas.delete(toks[i]); }
 
@@ -387,17 +396,21 @@ function makeMd(ctx) {
       }
     }
 
-    /* 结尾帧引用块 → 结尾帧卡（海棠纸底 · STRONG 原句（「；」后折行）· BROWN 预告行） */
-    if (endRaw && endIdx>=0){
+    /* 结尾帧 → 收束卡（海棠纸底 · STRONG 原句（「；」后折行）· BROWN 预告行）。
+       统一渲染到文末（刊尾行之前）：N-001 体例规格行在文末，原位渲染=文末，输出不变；
+       N-002 起规格行与引子同块置顶，原位渲染会把卡插在刊头下——一律收进文末。 */
+    if (endRaw){
       const mo=/原句[「"]+([^」"]+)[」"]+/.exec(endRaw), mp2=/下集预告[「"]+([^」"]+)[」"]+/.exec(endRaw);
       const q1=mo?mo[1].trim():'', q2=mp2?mp2[1].trim():'';
-      toks[endIdx].content=
+      const cardTok = new state.Token('html_block','',0);
+      cardTok.content=
         '<section style="background:'+C.WARMBG+';border-radius:8px;padding:20px 18px 16px;margin:4px 0 24px;">'
         +'<section style="text-align:center;font-size:11px;'+lh(11,1.6)+'letter-spacing:3px;color:'+C.BROWN+';font-weight:700;">本集 · 收束</section>'
         +(q1?'<section style="text-align:center;font-size:17px;'+lh(17,1.7)+'font-weight:700;color:'+C.STRONG+';margin:10px 0 12px;letter-spacing:.5px;">'+escH(q1).replace(/；/g,'；<br>')+'</section>':'')
         +'<section style="text-align:center;margin:0 auto 12px;width:28px;height:2px;background:'+C.ORANGE+';overflow:hidden;font-size:2px;'+lh(2,1)+'">&#160;</section>'
         +(q2?'<section style="text-align:center;font-size:13px;'+lh(13,1.8)+'color:'+C.BROWN+';">下集 · '+escH(q2)+'</section>':'')
         +'</section>';
+      toks.push(cardTok);
     }
 
     /* 刊尾行：细线 + 刊名 · 刊—001·上（呼应封面底行） */
@@ -841,7 +854,7 @@ export function checkStatic(html) {
 }
 
 /* ===== 一键复制页（浏览器端：一键复制 + 二次微调栏 + 品牌位） ===== */
-const VERSION = '1.2.8';
+const VERSION = '1.2.9';
 const COLOR_KEYS = ['ORANGE','DEEP','EMBER','STRONG','CHIP','LINK','BROWN','TAN','TEXT','TEXT2','TXTQ','WARMBG','WARMBG2','CODEBG','CODE','ZEBRA','LIST2','BORDER','PTEYE','PTNOTE'];
 const ALERT_ORDER = ['NOTE','TIP','IMPORTANT','WARNING','CAUTION'];
 function themeColorList(t){
@@ -982,6 +995,7 @@ function parseArgs(argv) {
     '--title': v => { args.title = v; }, '--author': v => { args.author = v; },
     '--digest': v => { args.digest = v; }, '--theme': v => { args.theme = v; },
     '--zoom': v => { args.zoom = parseFloat(v); }, '--pad': v => { args.pad = parseInt(v, 10); },
+    '--chapter': v => { args.chapter = v; },
     '--meta': v => { args.meta = v; },
   };
   const BOOL = { // 布尔开关：不消费后续参数
@@ -999,7 +1013,7 @@ function parseArgs(argv) {
 function main() {
   const args = parseArgs(process.argv);
   if (!args._.length) {
-    console.error('用法: node render.mjs <input.md> [-o out.html] [--copy-page f] [--draft f] [--theme t] [--zoom n] [--pad n] [--meta f]');
+    console.error('用法: node render.mjs <input.md> [-o out.html] [--copy-page f] [--draft f] [--theme t] [--zoom n] [--pad n] [--chapter t] [--meta f]');
     process.exit(1);
   }
   const input = path.resolve(args._[0]);
@@ -1008,7 +1022,7 @@ function main() {
 
   let result;
   try {
-    result = renderOrangeink(mdSrc, { theme:args.theme||'orangeink', zoom:args.zoom||1, pad:args.pad==null?14:args.pad });
+    result = renderOrangeink(mdSrc, { theme:args.theme||'orangeink', zoom:args.zoom||1, pad:args.pad==null?14:args.pad, chapter:args.chapter||'' });
   } catch (err) {
     console.error('渲染失败:', err.message);
     process.exit(1);
