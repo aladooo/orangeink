@@ -174,7 +174,7 @@ html,body{margin:0;height:100%;background:var(--ui-bg);color:var(--ui-fg);
   <div id="checkPanel"><span id="toggleCheck">收起 ▾</span><div class="cnt">自检面板：粘贴内容后点「自检」</div></div>
   <footer id="siteFooter">
     <span class="f-brand">橙墨 orangeink · oimd</span>
-    <span class="f-ver">v1.2.7</span>
+    <span class="f-ver">v1.2.8</span>
     <span id="fUpdate" style="display:none"></span>
     <span class="f-lic">MIT 开源</span>
     <span class="sp"></span>
@@ -554,15 +554,15 @@ md.core.ruler.push('novel_structure', function(state){
     for(j=h1In+1;j<toks.length;j++){ if(toks[j].type==='heading_close'){ toks[j].hidden=true; break; } }
     toHtml(toks[h1In],
       '<section style="margin:2px 0 14px;">'
-      +'<div style="overflow:hidden;">'
+      +'<section style="overflow:hidden;">'
       +'<span style="display:inline-block;width:20px;height:20px;background:'+(NV.sealColor||'#c23b2e')+';color:#fff;font-size:12px;'+lh(12,1.67)+'font-weight:700;text-align:center;border-radius:3px;vertical-align:middle;">'+escH(NV.seal||'行')+'</span>'
       +'<span style="font-size:13px;font-weight:700;color:'+C.DEEP+';margin-left:7px;vertical-align:middle;">'+escH(NV.journal)+'</span>'
       +hairline(88)
       +'<span style="font-size:11px;color:'+C.BROWN+';font-weight:700;letter-spacing:1px;vertical-align:middle;">'+escH(epLabel)+'</span>'
-      +'</div>'
-      +'<div style="margin-top:12px;font-size:12px;'+lh(12,1.7)+'color:'+C.BROWN+';font-weight:700;letter-spacing:1px;"><span style="display:inline-block;width:8px;height:8px;background:'+C.ORANGE+';margin-right:7px;vertical-align:middle;overflow:hidden;font-size:8px;'+lh(8,1)+'">&#160;</span>'+escH(NV.book)+' · '+pad3+'</div>'
-      +'<div style="border-left:4px solid '+C.ORANGE+';padding-left:12px;font-size:26px;'+lh(26,1.5)+'font-weight:700;color:'+C.DEEP+';letter-spacing:3px;margin-top:12px;">'+escH(chTitle?chTitle+' · '+epPart:epLabel)+'</div>'
-      +(introTxt?'<div style="font-size:13px;'+lh(13,1.8)+'color:'+C.TEXT2+';letter-spacing:2px;margin-top:12px;">'+escH(introTxt.replace(/，/g,'　　').replace(/[。．]$/,''))+'</div>':'')
+      +'</section>'
+      +'<section style="margin-top:12px;font-size:12px;'+lh(12,1.7)+'color:'+C.BROWN+';font-weight:700;letter-spacing:1px;"><span style="display:inline-block;width:8px;height:8px;background:'+C.ORANGE+';margin-right:7px;vertical-align:middle;overflow:hidden;font-size:8px;'+lh(8,1)+'">&#160;</span>'+escH(NV.book)+' · '+pad3+'</section>'
+      +'<section style="border-left:4px solid '+C.ORANGE+';padding-left:12px;font-size:26px;'+lh(26,1.5)+'font-weight:700;color:'+C.DEEP+';letter-spacing:3px;margin-top:12px;">'+escH(chTitle?chTitle+' · '+epPart:epLabel)+'</section>'
+      +(introTxt?'<section style="font-size:13px;'+lh(13,1.8)+'color:'+C.TEXT2+';letter-spacing:2px;margin-top:12px;">'+escH(introTxt.replace(/，/g,'　　').replace(/[。．]$/,''))+'</section>':'')
       +'</section>');
   }
   md.__novelTitle = chTitle ? (chTitle+' · '+epPart) : (NV.book+' · '+pad3+epPart);
@@ -589,10 +589,10 @@ md.core.ruler.push('novel_structure', function(state){
     var q1=mo?mo[1].trim():'', q2=mp2?mp2[1].trim():'';
     toks[endIdx].content=
       '<section style="background:'+C.WARMBG+';border-radius:8px;padding:20px 18px 16px;margin:4px 0 24px;">'
-      +'<div style="text-align:center;font-size:11px;'+lh(11,1.6)+'letter-spacing:3px;color:'+C.BROWN+';font-weight:700;">本集 · 收束</div>'
-      +(q1?'<div style="text-align:center;font-size:17px;'+lh(17,1.7)+'font-weight:700;color:'+C.STRONG+';margin:10px 0 12px;letter-spacing:.5px;">'+escH(q1).replace(/；/g,'；<br>')+'</div>':'')
-      +'<div style="text-align:center;margin:0 auto 12px;width:28px;height:2px;background:'+C.ORANGE+';overflow:hidden;font-size:2px;'+lh(2,1)+'">&#160;</div>'
-      +(q2?'<div style="text-align:center;font-size:13px;'+lh(13,1.8)+'color:'+C.BROWN+';">下集 · '+escH(q2)+'</div>':'')
+      +'<section style="text-align:center;font-size:11px;'+lh(11,1.6)+'letter-spacing:3px;color:'+C.BROWN+';font-weight:700;">本集 · 收束</section>'
+      +(q1?'<section style="text-align:center;font-size:17px;'+lh(17,1.7)+'font-weight:700;color:'+C.STRONG+';margin:10px 0 12px;letter-spacing:.5px;">'+escH(q1).replace(/；/g,'；<br>')+'</section>':'')
+      +'<section style="text-align:center;margin:0 auto 12px;width:28px;height:2px;background:'+C.ORANGE+';overflow:hidden;font-size:2px;'+lh(2,1)+'">&#160;</section>'
+      +(q2?'<section style="text-align:center;font-size:13px;'+lh(13,1.8)+'color:'+C.BROWN+';">下集 · '+escH(q2)+'</section>':'')
       +'</section>';
   }
 
@@ -859,7 +859,7 @@ function render(){
     preview.innerHTML='<section class="fm-article" style="'+padStyle+'">'+md.render(fn.text)+fn.html+'</section>';
     polish();                       /* 斑马纹等纯 DOM 层精修（内联样式，复制同样带走） */
   }catch(err){
-    preview.innerHTML='<div style="color:#c0392b;padding:10px">渲染错误：'+escapeHtml(err.message)+'</div>';
+    preview.innerHTML='<section style="color:#c0392b;padding:10px">渲染错误：'+escapeHtml(err.message)+'</section>';
   }
   /* 左侧统计=Markdown 源文全部字符（含语法符号，与 VSCode 字符数同口径）；
      右侧=公众号口径估算（见 wechatCount），两边对照即可评估成文长度。 */
@@ -1155,12 +1155,12 @@ function renderIssues(issues){
   checkBadge.className=issues.length?'':'zero';
   var to=$('toggleCheck');
   if(!issues.length){
-    checkPanel.innerHTML='<span id="toggleCheck">收起 ▾</span><div class="ok">✓ 全部通过，可安全复制发布</div>';
+    checkPanel.innerHTML='<span id="toggleCheck">收起 ▾</span><div class="ok">✓ 全部通过，可安全复制发布</section>';
   }else{
-    checkPanel.innerHTML='<span id="toggleCheck">收起 ▾</span><div class="cnt">检出 '+issues.length+' 项，点击可定位到对应位置</div>'+
+    checkPanel.innerHTML='<span id="toggleCheck">收起 ▾</span><div class="cnt">检出 '+issues.length+' 项，点击可定位到对应位置</section>'+
       issues.map(function(it,i){
         var sev=it.sev==='error'?'违规':'提示';
-        return '<div class="issue" data-i="'+i+'"><b>'+it.rule+'</b> <span class="sev-'+it.sev+'">'+sev+'</span><br><small>'+it.desc+'</small></div>';
+        return '<div class="issue" data-i="'+i+'"><b>'+it.rule+'</b> <span class="sev-'+it.sev+'">'+sev+'</span><br><small>'+it.desc+'</small></section>';
       }).join('');
   }
   bindToggle();

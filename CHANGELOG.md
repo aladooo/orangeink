@@ -2,7 +2,18 @@
 
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
-## [1.2.7] - 2026-10-14
+## [1.2.8] - 2026-10-14
+
+### Fixed
+
+- **复制页微调栏失效（haitang 页面）**：`makeCopyPage` 两处硬编码主题列表（调色板映射表 + 下拉选项）漏了 haitang——主题下拉缺「海棠」项，且切换字号/边距时 `mapColors(html, P.orangeink, undefined)` 抛 TypeError，`apply()` 崩掉导致全部顶栏选项失效。两处补入 haitang（下拉名「海棠 × 黛蓝 · 小说」）
+- **微调基准主题硬编码**：`apply()` 以 `"orangeink"` 为固定映射基准——haitang 页面里切回橙墨不会反向映射（显示的仍是海棠配色）。改为以页面实际初始主题为基准（旧页面行为不变）
+- **公众号粘贴样式丢失（haitang 刊头）**：小说刊头（方章行/系列行/章节行/引子行）与结尾帧内部共 16 个 `<div>` 粘贴公众号后样式被剥（顶层 div 全崩、嵌套 div 侥幸保留）——渲染输出一律改 `<section>`，回归橙墨「全文 section/span/p」纪律；坑位表补录「div 样式剥除」规则（实测：2026-10-14）
+
+> 验证：parity-check PARITY OK（haitang × N-001-上 / 默认 × N-001-上 / 默认 × sample）；复制页 jsdom 冒烟 14 次控件切换零错误、状态复原、渲染一致；公众号编辑器粘贴实测通过（2026-10-14 用户确认）
+
+[1.2.8]: https://github.com/aladooo/orangeink/releases/tag/v1.2.8
+[1.2.7]: https://github.com/aladooo/orangeink/releases/tag/v1.2.7
 
 ### Added
 

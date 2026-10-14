@@ -15,6 +15,7 @@
 | 固定宽度 | 2.4 | width >677px 溢出安全区 |
 | pre 滥用 | 2.8 | 普通长段落不用 `<pre>` |
 | 空标签剥离 | 实测 | 分割条是无内容的 span，粘贴后被删。**修法：条内塞 `&nbsp;`** + `font-size:4px;line-height:4px;overflow:hidden`（不撑行框、过叠字检测） |
+| div 样式剥除 | 实测（2026-10-14，haitang 主题首发回归） | 渲染输出中的 `<div>` 粘贴公众号后样式不可控——顶层 div 被剥样式（刊头全崩），嵌在 section 卡片内的 div 侥幸保留。**修法：渲染输出一律 section/span/p，禁用 div**（判别特征：渲染字符串 div 必带 `style=`，页面 UI 框架 div 不在此列） |
 | 复制污染 | 实测 | `execCommand('copy')` 走 annotate-for-interchange 会把页面计算样式（text-align:start、font-family、orphans/widows…）写进剪贴板。**修法：copy 事件里 `clipboardData.setData` 自建 HTML + 先净化**（渲染器输出已是净化后字符串，复制页按钮同样走此路径） |
 
 ## 质量规则（不拦发布，自检按 warn 报）

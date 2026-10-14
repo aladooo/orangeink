@@ -358,15 +358,15 @@ function makeMd(ctx) {
       for (j=h1In+1;j<toks.length;j++){ if (toks[j].type==='heading_close'){ toks[j].hidden=true; break; } }
       toHtml(toks[h1In],
         '<section style="margin:2px 0 14px;">'
-        +'<div style="overflow:hidden;">'
+        +'<section style="overflow:hidden;">'
         +'<span style="display:inline-block;width:20px;height:20px;background:'+(NV.sealColor||'#c23b2e')+';color:#fff;font-size:12px;'+lh(12,1.67)+'font-weight:700;text-align:center;border-radius:3px;vertical-align:middle;">'+escH(NV.seal||'行')+'</span>'
         +'<span style="font-size:13px;font-weight:700;color:'+C.DEEP+';margin-left:7px;vertical-align:middle;">'+escH(NV.journal)+'</span>'
         +hairline(88)
         +'<span style="font-size:11px;color:'+C.BROWN+';font-weight:700;letter-spacing:1px;vertical-align:middle;">'+escH(epLabel)+'</span>'
-        +'</div>'
-        +'<div style="margin-top:12px;font-size:12px;'+lh(12,1.7)+'color:'+C.BROWN+';font-weight:700;letter-spacing:1px;"><span style="display:inline-block;width:8px;height:8px;background:'+C.ORANGE+';margin-right:7px;vertical-align:middle;overflow:hidden;font-size:8px;'+lh(8,1)+'">&#160;</span>'+escH(NV.book)+' · '+pad3+'</div>'
-        +'<div style="border-left:4px solid '+C.ORANGE+';padding-left:12px;font-size:26px;'+lh(26,1.5)+'font-weight:700;color:'+C.DEEP+';letter-spacing:3px;margin-top:12px;">'+escH(chTitle?chTitle+' · '+epPart:epLabel)+'</div>'
-        +(introTxt?'<div style="font-size:13px;'+lh(13,1.8)+'color:'+C.TEXT2+';letter-spacing:2px;margin-top:12px;">'+escH(introTxt.replace(/，/g,'　　').replace(/[。．]$/,''))+'</div>':'')
+        +'</section>'
+        +'<section style="margin-top:12px;font-size:12px;'+lh(12,1.7)+'color:'+C.BROWN+';font-weight:700;letter-spacing:1px;"><span style="display:inline-block;width:8px;height:8px;background:'+C.ORANGE+';margin-right:7px;vertical-align:middle;overflow:hidden;font-size:8px;'+lh(8,1)+'">&#160;</span>'+escH(NV.book)+' · '+pad3+'</section>'
+        +'<section style="border-left:4px solid '+C.ORANGE+';padding-left:12px;font-size:26px;'+lh(26,1.5)+'font-weight:700;color:'+C.DEEP+';letter-spacing:3px;margin-top:12px;">'+escH(chTitle?chTitle+' · '+epPart:epLabel)+'</section>'
+        +(introTxt?'<section style="font-size:13px;'+lh(13,1.8)+'color:'+C.TEXT2+';letter-spacing:2px;margin-top:12px;">'+escH(introTxt.replace(/，/g,'　　').replace(/[。．]$/,''))+'</section>':'')
         +'</section>');
     }
     md.__novelTitle = chTitle ? (chTitle+' · '+epPart) : (NV.book+' · '+pad3+epPart);
@@ -393,10 +393,10 @@ function makeMd(ctx) {
       const q1=mo?mo[1].trim():'', q2=mp2?mp2[1].trim():'';
       toks[endIdx].content=
         '<section style="background:'+C.WARMBG+';border-radius:8px;padding:20px 18px 16px;margin:4px 0 24px;">'
-        +'<div style="text-align:center;font-size:11px;'+lh(11,1.6)+'letter-spacing:3px;color:'+C.BROWN+';font-weight:700;">本集 · 收束</div>'
-        +(q1?'<div style="text-align:center;font-size:17px;'+lh(17,1.7)+'font-weight:700;color:'+C.STRONG+';margin:10px 0 12px;letter-spacing:.5px;">'+escH(q1).replace(/；/g,'；<br>')+'</div>':'')
-        +'<div style="text-align:center;margin:0 auto 12px;width:28px;height:2px;background:'+C.ORANGE+';overflow:hidden;font-size:2px;'+lh(2,1)+'">&#160;</div>'
-        +(q2?'<div style="text-align:center;font-size:13px;'+lh(13,1.8)+'color:'+C.BROWN+';">下集 · '+escH(q2)+'</div>':'')
+        +'<section style="text-align:center;font-size:11px;'+lh(11,1.6)+'letter-spacing:3px;color:'+C.BROWN+';font-weight:700;">本集 · 收束</section>'
+        +(q1?'<section style="text-align:center;font-size:17px;'+lh(17,1.7)+'font-weight:700;color:'+C.STRONG+';margin:10px 0 12px;letter-spacing:.5px;">'+escH(q1).replace(/；/g,'；<br>')+'</section>':'')
+        +'<section style="text-align:center;margin:0 auto 12px;width:28px;height:2px;background:'+C.ORANGE+';overflow:hidden;font-size:2px;'+lh(2,1)+'">&#160;</section>'
+        +(q2?'<section style="text-align:center;font-size:13px;'+lh(13,1.8)+'color:'+C.BROWN+';">下集 · '+escH(q2)+'</section>':'')
         +'</section>';
     }
 
@@ -841,7 +841,7 @@ export function checkStatic(html) {
 }
 
 /* ===== 一键复制页（浏览器端：一键复制 + 二次微调栏 + 品牌位） ===== */
-const VERSION = '1.2.7';
+const VERSION = '1.2.8';
 const COLOR_KEYS = ['ORANGE','DEEP','EMBER','STRONG','CHIP','LINK','BROWN','TAN','TEXT','TEXT2','TXTQ','WARMBG','WARMBG2','CODEBG','CODE','ZEBRA','LIST2','BORDER','PTEYE','PTNOTE'];
 const ALERT_ORDER = ['NOTE','TIP','IMPORTANT','WARNING','CAUTION'];
 function themeColorList(t){
@@ -858,10 +858,10 @@ const DARK_LIST = ['#ff6a1a','#ece7de','#ff8a4d','#ff7a3d','#ff6a3d','#ff9459','
 function makeCopyPage(html, title, opts = {}) {
   const escTitle = title.replace(/&/g,'&amp;').replace(/</g,'&lt;');
   const palettes = {};
-  ['orangeink','inkblue','pine','gold'].forEach(t => { palettes[t] = themeColorList(t); });
+  ['orangeink','inkblue','pine','gold','haitang'].forEach(t => { palettes[t] = themeColorList(t); });
   palettes.dark = DARK_LIST;
   const optTheme = opts.theme || 'orangeink', optZoom = opts.zoom || 1, optPad = opts.pad == null ? 14 : opts.pad;
-  const themeOpts = [['orangeink','橙墨 · 炭黑×亮橙'],['inkblue','墨蓝 × 朱砂'],['pine','松烟 × 陶土'],['gold','石墨 × 鎏金']]
+  const themeOpts = [['orangeink','橙墨 · 炭黑×亮橙'],['inkblue','墨蓝 × 朱砂'],['pine','松烟 × 陶土'],['gold','石墨 × 鎏金'],['haitang','海棠 × 黛蓝 · 小说']]
     .map(([v,n]) => '<option value="'+v+'"'+(v===optTheme?' selected':'')+'>'+n+'</option>').join('');
   const zoomOpts = [['0.94','小'],['1','标准'],['1.06','大']]
     .map(([v,n]) => '<option value="'+v+'"'+(parseFloat(v)===optZoom?' selected':'')+'>'+n+'</option>').join('');
@@ -929,7 +929,7 @@ function makeCopyPage(html, title, opts = {}) {
 '  }\n'+
 '  function apply(){\n'+
 '    var html=ORIG;\n'+
-'    if(st.theme!=="orangeink")html=mapColors(html,P.orangeink,P[st.theme],false);\n'+
+'    if(st.theme!=="'+optTheme+'")html=mapColors(html,P["'+optTheme+'"],P[st.theme],false);\n'+
 '    if(st.dark){html=mapColors(html,P[st.theme],P.dark,true);'+
 '      html=html.replace("box-sizing:border-box","box-sizing:border-box;background:#141312");}\n'+
 '    if(st.zoom!==1)html=mapZoom(html,st.zoom);\n'+
