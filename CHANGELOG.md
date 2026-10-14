@@ -2,7 +2,21 @@
 
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
-## [1.2.3] - 2026-10-09
+## [1.2.7] - 2026-10-14
+
+### Added
+
+- **新主题「海棠」（haitang）**：面向小说连载（首发《九千九百九十九张》，公众号「纸上行舟小说集」），排版台第 5 套主题。深蓝 #274770 / 橙金 #a58650 / 朱红 #9e3b33 / 暖纸底 #f7efe6，印章红 #c23b2e
+- **小说范式层（多书共享）**：H1 形态门 `N-001-上 / N-001·上 / N-001 上` 激活——H1 渲染为「第 N 章　标题」章节行样式；正文中的「第 X 章　Y」行、「——（第 X 幕终）」幕收束行、「——落款」落款行（右对齐）自动识别并套用小说排版
+- **引子 / 结尾帧规格行**：`> 引子：…` 转封面题下引子行、`> 结尾帧：…` 隐藏（成片结尾帧用，网页排版不展示）；markdown-it hidden blockquote 修复——hidden 块不再输出多余 `</section>` 提前闭合包裹层（此前会导致 jsdom 解析丢正文）
+- **设计定稿页** `docs/design-novel-haitang.html`（多书范式：范式层共享 + 注册层每书约 25 行）
+
+### Fixed
+
+- **parity-check 主题切换走真实用户路径**：浏览器版主脚本为 IIFE，`applyOpts` 不在 window 上——改为对主题下拉派发 `change` 事件（此前 `win.applyOpts()` 在非默认主题对拍时崩溃）
+
+[1.2.7]: https://github.com/aladooo/orangeink/releases/tag/v1.2.7
+[1.2.3]: https://github.com/aladooo/orangeink/releases/tag/v1.2.3
 
 ### Fixed
 

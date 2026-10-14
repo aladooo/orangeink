@@ -5,7 +5,7 @@ license: MIT
 compatibility: Node >= 18；换机部署后在 skill 目录执行 npm install 一次（jsdom / markdown-it 已精确锁版本声明在 package.json dependencies）
 metadata:
   author: AladoooWu
-  version: 1.2.6
+  version: 1.2.7
   locale: zh-CN（微信公众号场景限定，产品定义即中文输出）
   permissions:
     fs-read: 仅读取用户在命令行显式传入的 Markdown 文件，及本 skill 目录内的自身文件
@@ -44,7 +44,7 @@ node <skill目录>/scripts/render.mjs <文章.md> \
 - `--copy-page`：**一键复制页**（自带「一键复制到公众号」按钮），浏览器打开 → 点按钮 → 公众号编辑器 Ctrl+V。这是**默认发布路径**
 - `--draft`：公众号 `draft/add` API 请求体（title/author/digest/content），默认作者「登叔」，可用 `--title/--author/--digest` 覆盖
 - `--meta`：字数（源文/公众号口径）/ 图片清单 / 自检结果 JSON
-- 主题：`--theme orangeink|inkblue|pine|gold`（默认 orangeink 炭黑×亮橙）；`--zoom 0.94|1|1.06`；`--pad 0|14|22`
+- 主题：`--theme orangeink|inkblue|pine|gold|haitang`（默认 orangeink 炭黑×亮橙）；`--zoom 0.94|1|1.06`；`--pad 0|14|22`
 - 复制页自带**二次微调栏**：主题 / 字号 / 边距 / 深色（夜读配色）可即调即复制；「手机预览」**默认开启**（仅切 375px 预览不影响复制内容）。页面不展示 CLI 提示，「微调为快速近似」的说明只保留在本文件（agent 侧）：微调是浏览器端调色板映射的**快速近似**（切换主题时警告块底色等近似），精确效果用 `--theme/--zoom/--pad` 重新生成；深色为正文深底配色，公众号正文区两侧会露白边，交付前提示用户
 - 复制页含**品牌位**：顶栏 `orangeink · oimd v<版本号>`、底部引流链接（github.com/aladooo/orangeink）——仅在复制页页面上，**不会进入复制到公众号的内容**
 - 退出码：0=成功且自检 0 项；1=渲染失败；2=自检有 error 级违规

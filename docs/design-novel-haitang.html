@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>orangeink 新主题设计 · 海棠 × 黛蓝（纸上行舟小说集）</title>
+</head>
+<body style="margin:0;background:#f2efea;font-family:'微软雅黑','Microsoft YaHei',sans-serif;color:#2b2a26;">
+<div style="max-width:960px;margin:0 auto;padding:32px 24px 80px;">
+
+<!-- ===== 头部说明 ===== -->
+<div style="background:#fff;border:1px solid #e3d9c8;border-radius:10px;padding:28px 32px;margin-bottom:28px;">
+  <div style="font-size:12px;letter-spacing:3px;color:#a58650;font-weight:700;margin-bottom:10px;">ORANGEINK · 主题设计稿 v1（待确认，未编码）</div>
+  <h1 style="margin:0 0 14px;font-size:26px;color:#274770;">海棠 × 黛蓝<span style="font-size:15px;color:#7d6c4e;font-weight:400;">　—— 「纸上行舟小说集」专用主题（key: <code style="background:#ece2cf;color:#7a4a1f;padding:2px 6px;border-radius:3px;font-size:13px;">haitang</code>）</span></h1>
+  <p style="margin:0 0 8px;font-size:14px;line-height:1.8;">为《九千九百九十九张》在公众号「纸上行舟小说集」连载设计。配色承接视频端「纸上行舟」已定稿的品牌基因：<b>黛蓝 #274770 · 卡其 #a58650 · 海棠纸意</b>。</p>
+  <p style="margin:0;font-size:14px;line-height:1.8;">除配色外，本主题新增 <b>4 条结构渲染规则</b>（刊头 / 章节牌 / 结尾帧卡 / 落款），把 Lilith 文稿的固定规格行（<code style="background:#ece2cf;color:#7a4a1f;padding:1px 5px;border-radius:3px;font-size:12px;"># N-00X-上</code>、<code style="background:#ece2cf;color:#7a4a1f;padding:1px 5px;border-radius:3px;font-size:12px;">&gt; 引子：</code>、<code style="background:#ece2cf;color:#7a4a1f;padding:1px 5px;border-radius:3px;font-size:12px;">&gt; 结尾帧：</code>、<code style="background:#ece2cf;color:#7a4a1f;padding:1px 5px;border-radius:3px;font-size:12px;">第X章　Y</code>、<code style="background:#ece2cf;color:#7a4a1f;padding:1px 5px;border-radius:3px;font-size:12px;">——千槿</code>）自动转成统一版式——<b>文稿一字不改，粘贴即排</b>。</p>
+</div>
+
+<!-- ===== 色板 ===== -->
+<div style="background:#fff;border:1px solid #e3d9c8;border-radius:10px;padding:28px 32px;margin-bottom:28px;">
+  <h2 style="margin:0 0 6px;font-size:19px;color:#274770;">① 色板（对照 THEMES 键位，全部过 WCAG AA）</h2>
+  <p style="margin:0 0 16px;font-size:13px;color:#6d675c;">设计原则与四主题同构：深字×纸白为主体，卡其金只做装饰（条/点/序号），单一暖色阶负责次级信息。以下对比度均按白底 #fff 计算（正文阈值 4.5:1）。</p>
+  <table style="border-collapse:collapse;width:100%;font-size:13px;">
+    <tr style="background:#274770;color:#fff;">
+      <th style="padding:8px 10px;text-align:left;">键位</th><th style="padding:8px 10px;text-align:left;">色值</th><th style="padding:8px 10px;text-align:left;">色样</th><th style="padding:8px 10px;text-align:left;">用途</th><th style="padding:8px 10px;">对比度</th>
+    </tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;border-bottom:1px solid #eee;"><code>DEEP</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#274770</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#274770;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">刊头书名 / 标题 / 表头 / 章节牌B</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#2e6b46;font-weight:700;">9.4 ✅</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>ORANGE</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#a58650</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#a58650;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">卡其金——分割条 / 序号 / 装饰（<b>不做文字色</b>）</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#6d675c;">装饰位</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>STRONG</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#9e3b33</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#9e3b33;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">加粗 / 结尾帧原句（海棠胭脂，苍滟之色）</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#2e6b46;font-weight:700;">6.7 ✅</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>EMBER</code> / <code>TXTQ</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#33587d</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#33587d;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">H3 / 引用文字 / pre 说明</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#2e6b46;font-weight:700;">7.2 ✅</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>CHIP</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#7a6140</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#7a6140;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">徽章/序号白字底（深卡其，卡其金加深保 AA）</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#2e6b46;font-weight:700;">白字 5.8 ✅</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>BROWN</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#6b5433</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#6b5433;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">H4 / 刊头系列名 / 预告行</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#2e6b46;font-weight:700;">7.2 ✅</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>TAN</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#7d6c4e</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#7d6c4e;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">落款 / 题注</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#2e6b46;font-weight:700;">5.1 ✅</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>TEXT</code> / <code>TEXT2</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#2b2a26 / #6d675c</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#2b2a26;border-radius:3px;"></span> <span style="display:inline-block;width:46px;height:16px;background:#6d675c;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">正文 / 题注斜体</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#2e6b46;font-weight:700;">13.7 / 5.6 ✅</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>LINK</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#2f5a85</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#2f5a85;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">链接（黛蓝同族，与正文可区分）</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#2e6b46;font-weight:700;">7.1 ✅</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>WARMBG</code> / <code>WARMBG2</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#f7efe6 / #f3ebe0</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#f7efe6;border:1px solid #ddd;border-radius:3px;"></span> <span style="display:inline-block;width:46px;height:16px;background:#f3ebe0;border:1px solid #ddd;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">引用块底 / 观点卡底（海棠纸色）</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#6d675c;">底色</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>CODEBG</code> / <code>CODE</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#ece2cf / #7a4a1f</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#ece2cf;border:1px solid #ddd;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">行内 code 底 / code 文字</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#2e6b46;font-weight:700;">7.3 ✅</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid #eee;"><code>ZEBRA</code> / <code>BORDER</code></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">#f8f4eb / #e3d9c8</td><td style="padding:7px 10px;border-bottom:1px solid #eee;"><span style="display:inline-block;width:46px;height:16px;background:#f8f4eb;border:1px solid #ddd;border-radius:3px;"></span> <span style="display:inline-block;width:46px;height:16px;background:#e3d9c8;border-radius:3px;"></span></td><td style="padding:7px 10px;border-bottom:1px solid #eee;">斑马纹 / 表格框线</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;color:#6d675c;">底色</td></tr>
+    <tr><td style="padding:7px 10px;"><code>LIST2</code> / <code>PTEYE</code> / <code>PTNOTE</code></td><td style="padding:7px 10px;">#8a6d3f / #b99a68 / #e8dcc6</td><td style="padding:7px 10px;"><span style="display:inline-block;width:46px;height:16px;background:#8a6d3f;border-radius:3px;"></span> <span style="display:inline-block;width:46px;height:16px;background:#b99a68;border-radius:3px;"></span> <span style="display:inline-block;width:46px;height:16px;background:#e8dcc6;border:1px solid #ddd;border-radius:3px;"></span></td><td style="padding:7px 10px;">二级列表点 / 拼眼Checker / 提示底（装饰）</td><td style="padding:7px 10px;text-align:center;color:#6d675c;">装饰位</td></tr>
+    <tr style="background:#faf7f0;"><td style="padding:7px 10px;"><b>印章红</b>（刊头专属常量，不占色板键）</td><td style="padding:7px 10px;">#c23b2e</td><td style="padding:7px 10px;"><span style="display:inline-block;width:46px;height:16px;background:#c23b2e;border-radius:3px;"></span></td><td style="padding:7px 10px;">「行」方章底（白字「行」，与封面同款）</td><td style="padding:7px 10px;text-align:center;color:#2e6b46;font-weight:700;">白字 5.3 ✅</td></tr>
+  </table>
+  <p style="margin:14px 0 0;font-size:12px;color:#6d675c;">alerts 五色提示块（随主题注册，小说稿基本用不到）：NOTE[#f7efe6/#a58650] · TIP[#f1ece2/#6b5433] · IMPORTANT[#f6e8e4/#9e3b33] · WARNING[#f5efdd/#a06300] · CAUTION[#f6e7e4/#cf3b2a]</p>
+</div>
+
+<!-- ===== 手机预览 ===== -->
+<div style="background:#fff;border:1px solid #e3d9c8;border-radius:10px;padding:28px 32px;margin-bottom:28px;">
+  <h2 style="margin:0 0 6px;font-size:19px;color:#274770;">② 整篇效果预览（375px 手机模拟 · N-001-上 真实文稿）</h2>
+  <p style="margin:0 0 18px;font-size:13px;color:#6d675c;">正文不指定字体，跟随微信默认；此处用衬线仅示意阅读感。章节牌给出 A / B 两案，结尾卡给出主案。</p>
+
+  <div style="display:flex;gap:28px;flex-wrap:wrap;">
+
+    <!-- 手机框 -->
+    <div style="width:375px;flex:none;background:#fff;border:1px solid #d8d2c6;border-radius:18px;padding:22px 14px 26px;box-shadow:0 4px 18px rgba(0,0,0,.08);">
+
+      <!-- 刊头（与视频号封面同构：行章 + 刊名 + 细线 + 集数 / 卡其方块书名行 / 竖条大字章题 / 引子行） -->
+      <section style="margin:2px 0 6px;">
+        <div style="overflow:hidden;">
+          <span style="display:inline-block;width:20px;height:20px;background:#c23b2e;color:#fff;font-size:12px;font-weight:700;line-height:20px;text-align:center;border-radius:3px;vertical-align:middle;">行</span>
+          <span style="font-size:13px;font-weight:700;color:#274770;margin-left:7px;vertical-align:middle;">纸上行舟小说集</span>
+          <span style="display:inline-block;width:88px;height:1px;background:#d8cdb8;margin:0 10px;vertical-align:middle;"></span>
+          <span style="font-size:11px;color:#a58650;font-weight:700;letter-spacing:1px;vertical-align:middle;">第 001 集 · 上</span>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#a58650;font-weight:700;letter-spacing:1px;"><span style="display:inline-block;width:8px;height:8px;background:#a58650;margin-right:7px;"></span>九千九百九十九张 · 001</div>
+        <div style="border-left:4px solid #a58650;padding-left:12px;font-size:26px;font-weight:700;color:#274770;letter-spacing:3px;margin-top:12px;">醒 · 上</div>
+        <div style="font-size:13px;color:#5c6670;letter-spacing:2px;margin-top:12px;">她每天醒来　　都不记得爱过谁</div>
+      </section>
+      <div style="text-align:center;font-size:11px;color:#b3a88e;margin-bottom:14px;">▲ 刊头与封面同构；章题「醒」自动取自正文首个章节行「第一章　醒」</div>
+
+      <!-- 楔子正文 -->
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:20px 0;">有一种续命的禁术。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 20px;">它的代价不是寿数，是记忆。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 20px;">被救的人每多活一天，就忘掉一点——先是不相干的琐事，然后是名字，是面孔，最后是爱。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 20px;">他们劝我别用。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 20px;">我用了。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 6px;text-align:right;color:#7d6c4e;font-size:14px;">—— 千槿</p>
+
+      <!-- 章节牌 A 案 -->
+      <section style="text-align:center;margin:26px 0 18px;">
+        <span style="display:inline-block;vertical-align:middle;width:26px;height:1px;background:#a58650;"></span>
+        <span style="display:inline-block;vertical-align:middle;font-size:17px;font-weight:700;color:#274770;letter-spacing:5px;margin:0 12px;">第一章　醒</span>
+        <span style="display:inline-block;vertical-align:middle;width:26px;height:1px;background:#a58650;"></span>
+      </section>
+      <div style="text-align:center;font-size:11px;color:#b3a88e;margin-bottom:18px;">▲ 章节牌 · A 案（细线夹注 · 素）</div>
+
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 18px;">我不知道这是哪儿。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 18px;">海在窗外，天是青的。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 18px;">我醒来的时候，第一个念头，是：这是哪儿。可这个念头很轻，落不到实处——像一片叶子落在水上，浮着，不沉。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 18px;">屋里很小。石头铺地，缝里长着薄薄一层青苔，踩上去是凉的。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 18px;">纸上写着字。一行一样，写了三遍——</p>
+      <p style="font-size:15px;line-height:1.85;margin:0 0 18px;text-align:center;color:<b></b>#9e3b33;font-weight:700;">苍滟喜欢千槿。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 18px;">苍滟。念着这两个字，舌尖是熟的，心口是空的。像在念别人的名字。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 18px;">「药。」他把碗推过来一点。</p>
+      <p style="font-size:15px;line-height:1.85;color:#2b2a26;margin:0 0 18px;">药是黑的，苦味压过了海棠。我端起来，喝了一口，舌根发麻。</p>
+
+      <!-- 分隔线（hr，主题色自动跟随） -->
+      <section style="text-align:center;margin:26px 0;"><span style="display:inline-block;width:36px;height:4px;border-radius:2px;background:#a58650;vertical-align:middle;"></span></section>
+
+      <!-- 结尾帧卡（主案） -->
+      <section style="background:#f7efe6;border-radius:8px;padding:20px 18px 16px;margin:4px 0 20px;">
+        <div style="text-align:center;font-size:11px;letter-spacing:3px;color:#6b5433;font-weight:700;">本集 · 收束</div>
+        <div style="text-align:center;font-size:17px;font-weight:700;color:#9e3b33;margin:10px 0 12px;line-height:1.6;">字，我认得；<br>心，认不得</div>
+        <div style="text-align:center;margin:0 auto 12px;width:28px;height:2px;background:#a58650;"></div>
+        <div style="text-align:center;font-size:13px;color:#6b5433;line-height:1.7;">下集 · 匣底那张纸，为什么不是她的字？</div>
+      </section>
+
+      <p style="font-size:12px;color:#b3a88e;text-align:center;margin:0 0 14px;">▲ 结尾帧卡（海棠纸底 · 胭脂原句 · 卡其预告）</p>
+
+      <!-- 刊尾（呼应封面底行：细线 + 刊号） -->
+      <section style="text-align:center;">
+        <span style="display:inline-block;vertical-align:middle;width:64px;height:1px;background:#d8cdb8;"></span>
+        <span style="display:inline-block;vertical-align:middle;font-size:11px;color:#a58650;letter-spacing:1px;margin:0 10px;">纸上行舟小说集 · 刊—001·上</span>
+        <span style="display:inline-block;vertical-align:middle;width:64px;height:1px;background:#d8cdb8;"></span>
+      </section>
+      <div style="text-align:center;font-size:11px;color:#b3a88e;margin-top:10px;">▲ 刊尾行（呼应封面底行「纸上行者 · 刊—001·上」）</div>
+    </div>
+
+    <!-- 变体对照 -->
+    <div style="flex:1;min-width:300px;">
+      <h3 style="margin:0 0 12px;font-size:15px;color:#274770;">章节牌 · B 案（黛蓝底白字，刊头感更强）</h3>
+      <section style="background:#faf7f0;border:1px solid #e3d9c8;border-radius:10px;padding:20px;">
+        <section style="text-align:center;margin:8px 0;">
+          <span style="display:inline-block;background:#274770;color:#fff;font-size:15px;font-weight:700;letter-spacing:6px;padding:8px 26px 8px 32px;border-radius:3px;">第一章　醒</span>
+        </section>
+      </section>
+
+      <h3 style="margin:24px 0 12px;font-size:15px;color:#274770;">结尾卡 · 变体（黛蓝夜航底，与视频端「黑胶夜航」呼应）</h3>
+      <section style="background:#faf7f0;border:1px solid #e3d9c8;border-radius:10px;padding:20px;">
+        <section style="background:#274770;border-radius:8px;padding:20px 18px 16px;">
+          <div style="text-align:center;font-size:11px;letter-spacing:3px;color:#b99a68;font-weight:700;">本集 · 收束</div>
+          <div style="text-align:center;font-size:17px;font-weight:700;color:#fff;margin:10px 0 12px;line-height:1.6;">字，我认得；<br>心，认不得</div>
+          <div style="text-align:center;margin:0 auto 12px;width:28px;height:2px;background:#a58650;"></div>
+          <div style="text-align:center;font-size:13px;color:#c9d4e4;line-height:1.7;">下集 · 匣底那张纸，为什么不是她的字？</div>
+        </section>
+        <div style="text-align:center;font-size:11px;color:#b3a88e;margin-top:8px;">白字 9.4 ✅ / 浅蓝字 #c9d4e4 7.9 ✅</div>
+      </section>
+
+      <h3 style="margin:24px 0 12px;font-size:15px;color:#274770;">加粗强调色 · 两案</h3>
+      <section style="background:#faf7f0;border:1px solid #e3d9c8;border-radius:10px;padding:18px;font-size:15px;line-height:2;">
+        <div>A 案 海棠胭脂 #9e3b33：这一叠纸里，是不是<b style="color:#9e3b33;">早把这句话收进去了</b>？</div>
+        <div>B 案 黛蓝 #274770（更素）：这一叠纸里，是不是<b style="color:#274770;">早把这句话收进去了</b>？</div>
+      </section>
+
+      <h3 style="margin:24px 0 12px;font-size:15px;color:#274770;">三主题并排速览（同一段落）</h3>
+      <section style="background:#faf7f0;border:1px solid #e3d9c8;border-radius:10px;padding:16px;font-size:13px;line-height:1.9;">
+        <div style="border-left:3px solid #a58650;padding-left:10px;color:#2b2a26;">海棠 × 黛蓝：药是黑的，苦味压过了海棠。</div>
+        <div style="border-left:3px solid #ff5a00;padding-left:10px;color:#26221c;margin-top:8px;">橙墨（默认）：药是黑的，苦味压过了海棠。</div>
+        <div style="border-left:3px solid #bf3b1e;padding-left:10px;color:#262a2e;margin-top:8px;">墨蓝 × 朱砂：药是黑的，苦味压过了海棠。</div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 源写法对照 ===== -->
+<div style="background:#fff;border:1px solid #e3d9c8;border-radius:10px;padding:28px 32px;margin-bottom:28px;">
+  <h2 style="margin:0 0 6px;font-size:19px;color:#274770;">③ 文稿写法 → 渲染对照（文稿一字不改）</h2>
+  <table style="border-collapse:collapse;width:100%;font-size:13px;">
+    <tr style="background:#274770;color:#fff;"><th style="padding:8px 10px;text-align:left;width:44%;">Lilith 文稿原文（已是这样，不用改）</th><th style="padding:8px 10px;text-align:left;">渲染结果</th></tr>
+    <tr><td style="padding:8px 10px;border-bottom:1px solid #eee;"><code># N-001-上</code></td><td style="padding:8px 10px;border-bottom:1px solid #eee;">刊头顶行：行章 + 刊名 + 细线 + 「第 001 集 · 上」；书名行「九千九百九十九张 · 001」（卡其方块前缀）</td></tr>
+    <tr><td style="padding:8px 10px;border-bottom:1px solid #eee;"><code>&gt; 引子：她每天醒来，都不记得爱过谁</code></td><td style="padding:8px 10px;border-bottom:1px solid #eee;">刊头引子行（并入刊头，居中灰字）</td></tr>
+    <tr><td style="padding:8px 10px;border-bottom:1px solid #eee;"><code>第一章　醒</code> 或 <code>**第四章　规矩**</code>（独立短行）</td><td style="padding:8px 10px;border-bottom:1px solid #eee;">章节牌（A/B 案二选一，全稿统一）</td></tr>
+    <tr><td style="padding:8px 10px;border-bottom:1px solid #eee;"><code>——千槿</code>（独立短行）</td><td style="padding:8px 10px;border-bottom:1px solid #eee;">右对齐落款（灰卡其小字）</td></tr>
+    <tr><td style="padding:8px 10px;border-bottom:1px solid #eee;"><code>---</code></td><td style="padding:8px 10px;border-bottom:1px solid #eee;">卡其金短条分割线（36×4，自动随主题）</td></tr>
+    <tr><td style="padding:8px 10px;"><code>&gt; 结尾帧：原句「…」＋下集预告「…」</code></td><td style="padding:8px 10px;">结尾帧卡：原句大字（胭脂）+ 卡其细条 + 下集预告行</td></tr>
+  </table>
+  <p style="margin:12px 0 0;font-size:12px;color:#6d675c;">识别规则都带形态约束（如章节行 ≤20 字且匹配「第X章」、落款 ≤8 字且以「——」开头），普通文章不受影响；系列名「纸上行舟小说集」与书名《九千九百九十九张》为主题常量，换书时改一处。</p>
+</div>
+
+<!-- ===== 多书范式 ===== -->
+<div style="background:#fff;border:1px solid #e3d9c8;border-radius:10px;padding:28px 32px;margin-bottom:28px;">
+  <h2 style="margin:0 0 6px;font-size:19px;color:#274770;">⑤ 多书范式（总账号「纸上行舟小说集」· 每书一主题）</h2>
+  <p style="margin:0 0 14px;font-size:14px;line-height:1.9;">「纸上行舟小说集」是<b>总账号</b>，后续会有多部小说连载。设计上把「变」与「不变」分开——<b>范式不变，每书一注册</b>：</p>
+  <table style="border-collapse:collapse;width:100%;font-size:13px;margin-bottom:14px;">
+    <tr style="background:#274770;color:#fff;"><th style="padding:8px 10px;text-align:left;width:30%;">层</th><th style="padding:8px 10px;text-align:left;">内容</th><th style="padding:8px 10px;text-align:left;">变化频率</th></tr>
+    <tr><td style="padding:8px 10px;border-bottom:1px solid #eee;"><b>范式层</b>（共享代码）</td><td style="padding:8px 10px;border-bottom:1px solid #eee;">4 条结构规则：刊头 / 章节牌 / 结尾帧卡 / 落款+刊尾——版式骨架、识别逻辑、AA 校验全部只写一次</td><td style="padding:8px 10px;border-bottom:1px solid #eee;">基本不变</td></tr>
+    <tr><td style="padding:8px 10px;border-bottom:1px solid #eee;"><b>注册层</b>（每书一份）</td><td style="padding:8px 10px;border-bottom:1px solid #eee;">主题注册项 = <code style="background:#ece2cf;color:#7a4a1f;padding:1px 5px;border-radius:3px;font-size:12px;">novel</code> 元数据（书名、刊名、集数格式）+ 色板（可整书换色系）+ alerts</td><td style="padding:8px 10px;border-bottom:1px solid #eee;">每部小说一份（~25 行）</td></tr>
+    <tr><td style="padding:8px 10px;"><b>文稿层</b>（Lilith）</td><td style="padding:8px 10px;">规格行照旧（<code># N-00X-上</code> / <code>&gt; 引子：</code> / 章节行 / <code>&gt; 结尾帧：</code>）——任何书同构</td><td style="padding:8px 10px;">不变</td></tr>
+  </table>
+  <div style="font-size:13px;line-height:2;background:#faf7f0;border:1px solid #e3d9c8;border-radius:8px;padding:14px 18px;">
+    <b style="color:#274770;">本期注册项示例</b>（九千九百九十九张 → <code style="background:#ece2cf;color:#7a4a1f;padding:1px 5px;border-radius:3px;font-size:12px;">haitang</code> 海棠×黛蓝）：<br>
+    <span style="color:#6d675c;">novel: { 书名:'九千九百九十九张', 刊名:'纸上行舟小说集', 集数:'第 001 集 · 上', 刊尾:'刊—001·上' }</span><br>
+    <b style="color:#274770;">未来新书</b>（示意）：只需新增一个注册项——比如换一套「青瓷 × 玄墨」色板 + 新书名，范式代码零改动，主题下拉自动出现。
+  </div>
+</div>
+
+<!-- ===== 已确认决定 ===== -->
+<div style="background:#eef4ee;border:1px solid #b9cdb9;border-radius:10px;padding:28px 32px;margin-bottom:28px;">
+  <h2 style="margin:0 0 10px;font-size:19px;color:#2e6b46;">⑥ 设计决定（2026-10-14 已确认 ✅）</h2>
+  <ol style="font-size:14px;line-height:2.1;margin:0;padding-left:22px;">
+    <li><b>章题来源</b>：从集内首个章节行自动提取（如 N-001-上 正文中的「第一章　醒」→ 刊头大字「醒 · 上」）——文稿零改动（比原 A 案更优，正文里本来就有章题）</li>
+    <li><b>刊头刊名</b>：「纸上行舟小说集」（红「行」方章 + 深蓝刊名）</li>
+    <li><b>章节牌</b>：A 案细线夹注（两侧卡其细线 + 深蓝字）</li>
+    <li><b>加粗强调色</b>：海棠胭脂 #9e3b33（默认案）</li>
+    <li><b>结尾卡底色</b>：海棠纸底（主案）</li>
+    <li><b>刊尾行</b>：保留「纸上行舟小说集 · 刊—001·上」细线行（默认案）</li>
+  </ol>
+</div>
+
+<!-- ===== 实现方案 ===== -->
+<div style="background:#fff;border:1px solid #e3d9c8;border-radius:10px;padding:28px 32px;">
+  <h2 style="margin:0 0 6px;font-size:19px;color:#274770;">④ 实现方案（确认设计后编码）</h2>
+  <ol style="font-size:14px;line-height:2;margin:0;padding-left:22px;">
+    <li><b>范式层（共享，一次写死）</b>：4 条结构规则——刊头（H1+引子行）/ 章节牌 / 落款 / 结尾帧卡+刊尾，core rule 解析 + renderer，浏览器版与 CLI 同口径；只命中小说稿形态，普通文章不受影响</li>
+    <li><b>注册层（每书一份）</b>：<code style="background:#ece2cf;color:#7a4a1f;padding:1px 5px;border-radius:3px;font-size:12px;">haitang</code> 主题注册项 = novel 元数据（书名/刊名/集数格式）+ 色板 + alerts（~25 行），主题下拉自动出现；未来新书只加注册项</li>
+    <li><b>同步面</b>：template.html → build.py 重建 → render.mjs（CLI 同口径）→ parity-check 对拍 → 本机 skill 副本 → 发版（预计 v1.3.0，含 minor 语义）</li>
+    <li><b>验收</b>：N-001-上 真实稿整篇渲染 + 对拍逐字节一致 + 自检 0 项 + AA 全过 + 主题下拉可见「海棠 × 黛蓝」</li>
+  </ol>
+</div>
+
+</div>
+</body>
+</html>

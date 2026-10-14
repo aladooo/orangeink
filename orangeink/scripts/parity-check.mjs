@@ -68,11 +68,23 @@ if (!win.__tool || !win.__tool.copyHTML) {
   process.exit(1);
 }
 win.document.getElementById('editor').value = mdSrc;
+/* 主题可由环境变量 OIMD_THEME 指定（haitang 等小说主题对拍用）：浏览器侧切下拉并重渲染 */
+const THEME = process.env.OIMD_THEME || 'orangeink';
+if (THEME !== 'orangeink') {
+  const sel = win.document.getElementById('themeSel');
+  if (!sel || ![...sel.options].some(o => o.value === THEME)) {
+    console.error('FAIL: 浏览器版模板无主题 ' + THEME);
+    process.exit(1);
+  }
+  sel.value = THEME;
+  /* 浏览器内 applyOpts 在 IIFE 闭包中未挂 window，走真实用户路径：下拉 change 事件 */
+  sel.dispatchEvent(new win.Event('change'));
+}
 win.__tool.render();
 const browserHtml = win.__tool.copyHTML();
 
 /* ② CLI 版：移植的渲染管线 */
-const cli = renderOrangeink(mdSrc, { theme:'orangeink', zoom:1, pad:14 });
+const cli = renderOrangeink(mdSrc, { theme: THEME, zoom:1, pad:14 });
 const cliHtml = cli.html;
 
 /* ③ 归一化后比对（HTML 实体等价形式统一） */

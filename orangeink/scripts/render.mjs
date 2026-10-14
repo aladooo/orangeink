@@ -12,7 +12,7 @@
 //   --title <t>            draft 标题（默认取 H1 或文件名）
 //   --author <a>           draft 作者（默认「登叔」）
 //   --digest <d>           draft 摘要（默认取首段前 54 字）
-//   --theme <name>         orangeink|inkblue|pine|gold（默认 orangeink）
+//   --theme <name>         orangeink|inkblue|pine|gold|haitang（默认 orangeink）
 //   --zoom <n>             字号倍率 0.94|1|1.06（默认 1）
 //   --pad <n>              两侧安全边距 px 0|14|22（默认 14）
 //   --quiet                仅输出关键结果行
@@ -83,6 +83,22 @@ const THEMES = {
     },
     alerts:{ NOTE:['#f3ecdb','#d9a514'], TIP:['#f1edda','#7a5a14'], IMPORTANT:['#f0e8d5','#8a5f0e'],
              WARNING:['#f4efd9','#a06300'], CAUTION:['#f5e6e0','#cf3b2a'] }
+  },
+  /* 海棠 × 黛蓝（v1.2.7）：小说连载专用主题，首册《九千九百九十九张》（公众号「纸上行舟小说集」）。
+     novel 为多书范式注册层：结构规则（novel_structure）读到 novel 才激活。
+     AA 注：卡其金 #a58650 只做装饰，卡其系文字一律 BROWN #6b5433（7.2:1）。 */
+  haitang: {
+    name:'海棠 × 黛蓝（小说 · 九千九百九十九张）',
+    C:{
+      ORANGE:'#a58650', DEEP:'#274770', EMBER:'#33587d', STRONG:'#9e3b33',
+      CHIP:'#7a6140', LINK:'#2f5a85', BROWN:'#6b5433', TAN:'#7d6c4e',
+      TEXT:'#2b2a26', TEXT2:'#6d675c', TXTQ:'#33587d',
+      WARMBG:'#f7efe6', WARMBG2:'#f3ebe0', CODEBG:'#ece2cf', CODE:'#7a4a1f',
+      ZEBRA:'#f8f4eb', LIST2:'#8a6d3f', BORDER:'#e3d9c8', PTEYE:'#b99a68', PTNOTE:'#e8dcc6'
+    },
+    alerts:{ NOTE:['#f7efe6','#a58650'], TIP:['#f1ece2','#6b5433'], IMPORTANT:['#f6e8e4','#9e3b33'],
+             WARNING:['#f5efdd','#a06300'], CAUTION:['#f6e7e4','#cf3b2a'] },
+    novel:{ book:'九千九百九十九张', journal:'纸上行舟小说集', seal:'行', sealColor:'#c23b2e' }
   }
 };
 
@@ -131,6 +147,8 @@ function makeCtx({ theme='orangeink', zoom=1, pad=14 } = {}) {
         return 'margin:0 0 22px;padding:14px 16px;background:'+c[0]+';border-left:4px solid '+c[1]+';color:'+C.TEXT+';font-size:'+px(15)+';'+lh(15,1.85)+'border-radius:0 6px 6px 0';
       },
       alertP:'margin:0;font-size:'+px(15)+';'+lh(15,1.85)+'color:'+C.TEXT+';letter-spacing:.3px',
+      /* 小说稿落款（——千槿）：右对齐灰卡其小字（novel_structure 识别后套用） */
+      novelSig:'margin:6px 0 22px;font-size:'+px(14)+';'+lh(14,1.8)+'color:'+C.TAN+';text-align:right;letter-spacing:.5px',
       alertIcon:'font-size:14px;font-weight:700;margin-right:7px'
     };
   }
@@ -140,7 +158,7 @@ function makeCtx({ theme='orangeink', zoom=1, pad=14 } = {}) {
 
 /* ===== markdown-it + 橙墨核心规则 ===== */
 function makeMd(ctx) {
-  const { C, px, lh, S } = ctx;
+  const { OPT, C, px, lh, S } = ctx;
   const md = markdownit({ html:true, breaks:false, linkify:true, typographer:false });
 
   /* linkify 全角消毒（v1.2.1）：linkify-it 会把紧贴 URL 的全角标点连同后续汉字一起吸进自动链接
@@ -273,6 +291,126 @@ function makeMd(ctx) {
     return true;
   });
 
+  /* ===== 小说连载结构规则（v1.2.7 范式层）：只对「novel 主题 + 小说稿形态」生效 =====
+     与 template.html novel_structure 同口径（对拍基准），文稿规格行 → 统一版式：
+     # N-001-上 → 刊头；> 引子： → 并入刊头；章节行 → 章节牌；——千槿 → 落款；
+     > 结尾帧： → 结尾帧卡；文末补刊尾行。形态门不满足整套静默跳过。 */
+  const sigParas = new WeakSet();
+  md.core.ruler.push('novel_structure', function(state){
+    const NV = THEMES[OPT.theme] && THEMES[OPT.theme].novel;
+    if (!NV) return true;
+    const toks = state.tokens;
+    let i, j, m;
+    const plain = tok => { let s='', c=tok.children||[]; for (let x=0;x<c.length;x++){ if (c[x].type==='text') s+=c[x].content; } return s; };
+    const escH = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const bqClose = idx => { let d=0; for (let x=idx;x<toks.length;x++){ if (toks[x].type==='blockquote_open') d++; else if (toks[x].type==='blockquote_close'){ d--; if (!d) return x; } } return -1; };
+    const toHtml = (tok, html) => { tok.type='html_block'; tok.content=html; tok.children=null; };
+    /* 细装饰线：2px 高 + nbsp 防剥（1px 空 span 会被微信粘贴解析剥掉） */
+    const hairline = w => '<span style="display:inline-block;width:'+w+'px;height:2px;background:'+C.ORANGE+';vertical-align:middle;overflow:hidden;font-size:2px;'+lh(2,1)+'">&#160;</span>';
+
+    /* 形态门：首个 h1 = N-<数字>-<上|中|下> */
+    let h1In=-1, epNum='', epPart='';
+    for (i=0;i<toks.length;i++){
+      if (toks[i].type==='heading_open' && toks[i].tag==='h1'){
+        for (j=i+1;j<toks.length && toks[j].type!=='heading_close';j++){ if (toks[j].type==='inline'){ h1In=j; break; } }
+        if (h1In>0 && (m=/^N[-－·](\d{1,3})[-－·]([上中下])$/.exec((toks[h1In].content||'').replace(/\s+/g,'')))){ epNum=m[1]; epPart=m[2]; }
+        break;
+      }
+    }
+    if (!epNum) return true;
+    const pad3 = ('00'+epNum).slice(-3);
+    const epLabel = '第 '+pad3+' 集 · '+epPart;
+
+    /* 扫描：首个章节行→章题；落款→sigParas；引子/结尾帧引用块→文本并整块隐藏 */
+    const chapRe=/^第[0-9〇零一二两三四五六七八九十百千]+章[\s　]+(.{1,14})$/;
+    let chTitle='', introTxt='', endRaw='', endIdx=-1;
+    for (i=0;i<toks.length;i++){
+      if (toks[i].type!=='blockquote_open'){
+        if (toks[i].type==='inline' && toks[i-1] && toks[i-1].type==='paragraph_open' && toks[i-1].level===0){
+          const bt = plain(toks[i]).trim();
+          if (!chTitle && (m=chapRe.exec(bt))) chTitle=m[1].trim();
+          if (/^——.{1,6}$/.test(bt)) sigParas.add(toks[i-1]);
+        }
+        continue;
+      }
+      const jc = bqClose(i); if (jc<0) continue;
+      let inner=-1;
+      for (j=i+1;j<jc;j++){ if (toks[j].type==='inline'){ inner=j; break; } }
+      if (inner<0) continue;
+      const btx = (toks[inner].content||'').trim();
+      if (!introTxt && /^引子[：:]/.test(btx)){
+        introTxt = btx.replace(/^引子[：:]\s*/,'');
+        toHtml(toks[i],'');
+        /* render() 不检查 inline 自身 hidden → inline 需转空 html_block 才真隐藏 */
+        for (j=i+1;j<=jc;j++){ if (toks[j].type==='inline'){ toHtml(toks[j],''); } else { toks[j].hidden=true; } }
+      } else if (!endRaw && /^结尾帧[：:]/.test(btx)){
+        endRaw=btx; endIdx=i;
+        toHtml(toks[i],'');
+        for (j=i+1;j<=jc;j++){ if (toks[j].type==='inline'){ toHtml(toks[j],''); } else { toks[j].hidden=true; } }
+      }
+    }
+    /* 刊头大字替代 h1 后，导语放大规则不适用于小说稿 */
+    for (i=0;i<toks.length;i++){ if (toks[i].type==='paragraph_open') leadParas.delete(toks[i]); }
+
+    /* H1 → 刊头（与视频号封面同构） */
+    if (h1In>0){
+      toks[h1In-1].hidden=true;
+      for (j=h1In+1;j<toks.length;j++){ if (toks[j].type==='heading_close'){ toks[j].hidden=true; break; } }
+      toHtml(toks[h1In],
+        '<section style="margin:2px 0 14px;">'
+        +'<div style="overflow:hidden;">'
+        +'<span style="display:inline-block;width:20px;height:20px;background:'+(NV.sealColor||'#c23b2e')+';color:#fff;font-size:12px;'+lh(12,1.67)+'font-weight:700;text-align:center;border-radius:3px;vertical-align:middle;">'+escH(NV.seal||'行')+'</span>'
+        +'<span style="font-size:13px;font-weight:700;color:'+C.DEEP+';margin-left:7px;vertical-align:middle;">'+escH(NV.journal)+'</span>'
+        +hairline(88)
+        +'<span style="font-size:11px;color:'+C.BROWN+';font-weight:700;letter-spacing:1px;vertical-align:middle;">'+escH(epLabel)+'</span>'
+        +'</div>'
+        +'<div style="margin-top:12px;font-size:12px;'+lh(12,1.7)+'color:'+C.BROWN+';font-weight:700;letter-spacing:1px;"><span style="display:inline-block;width:8px;height:8px;background:'+C.ORANGE+';margin-right:7px;vertical-align:middle;overflow:hidden;font-size:8px;'+lh(8,1)+'">&#160;</span>'+escH(NV.book)+' · '+pad3+'</div>'
+        +'<div style="border-left:4px solid '+C.ORANGE+';padding-left:12px;font-size:26px;'+lh(26,1.5)+'font-weight:700;color:'+C.DEEP+';letter-spacing:3px;margin-top:12px;">'+escH(chTitle?chTitle+' · '+epPart:epLabel)+'</div>'
+        +(introTxt?'<div style="font-size:13px;'+lh(13,1.8)+'color:'+C.TEXT2+';letter-spacing:2px;margin-top:12px;">'+escH(introTxt.replace(/，/g,'　　').replace(/[。．]$/,''))+'</div>':'')
+        +'</section>');
+    }
+    md.__novelTitle = chTitle ? (chTitle+' · '+epPart) : (NV.book+' · '+pad3+epPart);
+
+    /* 章节行 → 章节牌（A 案细线夹注） */
+    for (i=0;i<toks.length;i++){
+      if (toks[i].type!=='inline' || !toks[i-1] || toks[i-1].type!=='paragraph_open' || toks[i-1].level!==0) continue;
+      const bt2 = plain(toks[i]).trim();
+      if (chapRe.test(bt2)){
+        toks[i-1].hidden=true;
+        if (toks[i+1] && toks[i+1].type==='paragraph_close') toks[i+1].hidden=true;
+        toHtml(toks[i],
+          '<section style="text-align:center;margin:30px 0 22px;">'
+          +hairline(26)
+          +'<span style="display:inline-block;vertical-align:middle;font-size:17px;'+lh(17,1.6)+'font-weight:700;color:'+C.DEEP+';letter-spacing:5px;margin:0 12px;">'+escH(bt2)+'</span>'
+          +hairline(26)
+          +'</section>');
+      }
+    }
+
+    /* 结尾帧引用块 → 结尾帧卡（海棠纸底 · STRONG 原句（「；」后折行）· BROWN 预告行） */
+    if (endRaw && endIdx>=0){
+      const mo=/原句[「"]+([^」"]+)[」"]+/.exec(endRaw), mp2=/下集预告[「"]+([^」"]+)[」"]+/.exec(endRaw);
+      const q1=mo?mo[1].trim():'', q2=mp2?mp2[1].trim():'';
+      toks[endIdx].content=
+        '<section style="background:'+C.WARMBG+';border-radius:8px;padding:20px 18px 16px;margin:4px 0 24px;">'
+        +'<div style="text-align:center;font-size:11px;'+lh(11,1.6)+'letter-spacing:3px;color:'+C.BROWN+';font-weight:700;">本集 · 收束</div>'
+        +(q1?'<div style="text-align:center;font-size:17px;'+lh(17,1.7)+'font-weight:700;color:'+C.STRONG+';margin:10px 0 12px;letter-spacing:.5px;">'+escH(q1).replace(/；/g,'；<br>')+'</div>':'')
+        +'<div style="text-align:center;margin:0 auto 12px;width:28px;height:2px;background:'+C.ORANGE+';overflow:hidden;font-size:2px;'+lh(2,1)+'">&#160;</div>'
+        +(q2?'<div style="text-align:center;font-size:13px;'+lh(13,1.8)+'color:'+C.BROWN+';">下集 · '+escH(q2)+'</div>':'')
+        +'</section>';
+    }
+
+    /* 刊尾行：细线 + 刊名 · 刊—001·上（呼应封面底行） */
+    const foot = new state.Token('html_block','',0);
+    foot.content='<section style="text-align:center;margin:26px 0 6px;">'
+      +hairline(64)
+      +'<span style="display:inline-block;vertical-align:middle;font-size:11px;'+lh(11,1.6)+'color:'+C.BROWN+';letter-spacing:1px;margin:0 10px;">'+escH(NV.journal)+' · 刊—'+pad3+'·'+epPart+'</span>'
+      +hairline(64)
+      +'</section>';
+    toks.push(foot);
+    return true;
+  });
+
   function setStyle(tok, style){ tok.attrSet('style', style); return tok; }
   function wrap(tokens, idx, options, env, self, style){
     setStyle(tokens[idx], style); return self.renderToken(tokens, idx, options);
@@ -282,6 +420,7 @@ function makeMd(ctx) {
     if (capParas.has(t[i])) st = S.caption;
     else if (alertParas.has(t[i])) st = S.alertP;
     else if (leadParas.has(t[i])) st = S.lead;
+    else if (sigParas.has(t[i])) st = S.novelSig;
     return wrap(t,i,o,e,s,st);
   };
   md.renderer.rules.heading_open = function(t,i,o,e,s){
@@ -330,7 +469,7 @@ function makeMd(ctx) {
     const a = t[i].attrGet('data-alert');
     return '<section style="'+(a?S.alertBox(a):S.blockquote)+'">';
   };
-  md.renderer.rules.blockquote_close = function(){ return '</section>'; };
+  md.renderer.rules.blockquote_close = function(t,i){ return t[i].hidden ? '' : '</section>'; };
 
   /* ===== 结构化模块（:::intro/quote/steps/point） ===== */
   const DIRECTIVES = {
@@ -591,7 +730,8 @@ export function renderOrangeink(src, opts = {}) {
   /* 元数据：标题/摘要候选/字数/图片清单 */
   const root = preview.querySelector('.fm-article');
   const h1 = root.querySelector('h1');
-  const title = h1 ? h1.textContent.trim() : '';
+  /* 小说稿刊头取代 H1 → 标题回退到 novel_structure 产出的「章题 · 部」（无则空） */
+  const title = h1 ? h1.textContent.trim() : (md.__novelTitle || '');
   const firstP = root.querySelector('p');
   const digest = firstP ? firstP.textContent.trim().slice(0,54) : '';
   const images = [].map.call(root.querySelectorAll('img'), im => ({ src: im.getAttribute('src'), alt: im.getAttribute('alt')||'' }));
@@ -701,7 +841,7 @@ export function checkStatic(html) {
 }
 
 /* ===== 一键复制页（浏览器端：一键复制 + 二次微调栏 + 品牌位） ===== */
-const VERSION = '1.2.6';
+const VERSION = '1.2.7';
 const COLOR_KEYS = ['ORANGE','DEEP','EMBER','STRONG','CHIP','LINK','BROWN','TAN','TEXT','TEXT2','TXTQ','WARMBG','WARMBG2','CODEBG','CODE','ZEBRA','LIST2','BORDER','PTEYE','PTNOTE'];
 const ALERT_ORDER = ['NOTE','TIP','IMPORTANT','WARNING','CAUTION'];
 function themeColorList(t){
