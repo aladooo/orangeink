@@ -326,11 +326,13 @@ function makeMd(ctx) {
        规格行按「行」识别（补丁 2026-10-14）：N-002 起体例把引子与结尾帧相邻写在文首
        同一引用块（软换行），整块匹配会互吞——引子只取「引子：」行，结尾帧只取「结尾帧：」行。 */
     const chapRe=/^第[0-9〇零一二两三四五六七八九十百千]+章[\s　]+(.{1,14})$/;
+    /* 幕收束尾缀（Lilith 体例标记，如「**第八章　攥**（第一幕收束）」）不进章题/章节牌 */
+    const stripAct = s => s.replace(/[（(]第[〇零一二两三四五六七八九十百千0-9]+幕收束[）)]\s*$/,'').trim();
     let chTitle='', introTxt='', endRaw='';
     for (i=0;i<toks.length;i++){
       if (toks[i].type!=='blockquote_open'){
         if (toks[i].type==='inline' && toks[i-1] && toks[i-1].type==='paragraph_open' && toks[i-1].level===0){
-          const bt = plain(toks[i]).trim();
+          const bt = stripAct(plain(toks[i]).trim());
           if (!chTitle && (m=chapRe.exec(bt))) chTitle=m[1].trim();
           if (/^——.{1,6}$/.test(bt)) sigParas.add(toks[i-1]);
         }
@@ -383,7 +385,7 @@ function makeMd(ctx) {
     /* 章节行 → 章节牌（A 案细线夹注） */
     for (i=0;i<toks.length;i++){
       if (toks[i].type!=='inline' || !toks[i-1] || toks[i-1].type!=='paragraph_open' || toks[i-1].level!==0) continue;
-      const bt2 = plain(toks[i]).trim();
+      const bt2 = stripAct(plain(toks[i]).trim());
       if (chapRe.test(bt2)){
         toks[i-1].hidden=true;
         if (toks[i+1] && toks[i+1].type==='paragraph_close') toks[i+1].hidden=true;
